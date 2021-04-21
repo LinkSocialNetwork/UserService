@@ -1,2 +1,0 @@
-# UserServices
-Users micro-service
