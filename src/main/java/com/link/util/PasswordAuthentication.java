@@ -98,7 +98,7 @@ public final class PasswordAuthentication
     /**
      * Authenticate with a password and a stored password token.
      *
-     * @return true if the password and token match
+     * @return true if the password and hash token match
      */
     public boolean authenticate(char[] password, String token)
     {
@@ -131,27 +131,25 @@ public final class PasswordAuthentication
     }
 
     /**
-     * Hash a password in an immutable {@code String}.
+     * Hash a password from a String.
      *
      * <p>Passwords should be stored in a {@code char[]} so that it can be filled
      * with zeros after use instead of lingering on the heap and elsewhere.
      *
-     * @deprecated Use {@link #hash(char[])} instead
+     * Overloaded wrapper (uses .toCharArray() on input)
+     * @return a secure authentication token to be stored for later authentication
      */
-    @Deprecated
     public String hash(String password)
     {
         return hash(password.toCharArray());
     }
 
     /**
-     * Authenticate with a password in an immutable {@code String} and a stored
-     * password token.
+     * Authenticate with a password String and a password token.
      *
-     * @deprecated Use {@link #authenticate(char[],String)} instead.
-     * @see #hash(String)
+     * Overloaded wrapper (uses .toCharArray() on input)
+     * @return true if the password and hash token match
      */
-    @Deprecated
     public boolean authenticate(String password, String token)
     {
         return authenticate(password.toCharArray(), token);

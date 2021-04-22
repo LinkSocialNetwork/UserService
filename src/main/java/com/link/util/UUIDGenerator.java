@@ -3,19 +3,25 @@ package com.link.util;
 import java.util.UUID;
 
 /**
- * Helper functions for other classes
- *
- * - UUID int generation
+ * Static generateUniqueId method for other classes to us
  */
 public class UUIDGenerator
 {
+    /**
+     * Generates a new UUID and removes the - characters to make it a int
+     *
+     * @return random UUID int with 9-14 digits
+     */
     public static int generateUniqueId()
     {
-        UUID idOne = UUID.randomUUID();
-        String str=""+idOne;
-        int uid=str.hashCode();
-        String filterStr=""+uid;
-        str=filterStr.replaceAll("-", "");
-        return Integer.parseInt(str);
+        UUID id = UUID.randomUUID();
+
+        String idString = "" + id;
+        int uid = idString.hashCode();
+
+        String filteredString = "" + uid;
+        idString = filteredString.replaceAll("-", "");
+
+        return Integer.parseInt(idString);
     }
 }
