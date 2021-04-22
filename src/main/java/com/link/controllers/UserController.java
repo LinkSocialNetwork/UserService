@@ -42,17 +42,12 @@ public class UserController {
         */
         User newUser= userService.getUserByUserName(user.getUserName());
 
-        System.out.println("userInfo: "+user.getPassword());
-        System.out.println("newUser: "+newUser.getPassword());
-
         //check if the PW input on client side matches the encrypted PW in our DB
         if(passwordEncoder.matches(user.getPassword(),newUser.getPassword())){
-            System.out.println("they match");
             //same login logic as before password encryption
             session.setAttribute("loggedInUser", newUser);
 
             User currentUser = (User) session.getAttribute("loggedInUser");
-
             return newUser;
 
         }else return new User();        // should fix this that return empty user
@@ -69,32 +64,29 @@ public class UserController {
         if(alreadyExists == null) {
             userService.createUser(user);
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
-
         }
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
-
         }
     }
 
-    /**
-     * Api endpoint that receives User object to use username to retreive User object from service layer.
-     * @param user User object from HTTP request.
-     * @return User object based on the username.
-     */
-    @PostMapping(value = "/getByUsername")
-    public User getUserByUsername(@RequestBody User user) {
-        loggy.info("An attempt to retrieve a user with username: "+user.getUserName()+".");
-        return userService.getUserByUserName(user.getUserName());
-    }
+//    /**
+//     * Api endpoint that receives User object to use username to retreive User object from service layer.
+//     * @param user User object from HTTP request.
+//     * @return User object based on the username.
+//     */
+//    @PostMapping(value = "/getByUsername")
+//    public User getUserByUsername(@RequestBody User user) {
+//        loggy.info("An attempt to retrieve a user with username: "+user.getUserName()+".");
+//        return userService.getUserByUserName(user.getUserName());
+//    }
 
     /**
      * Api endpoint that returns an Array list of User objects from the service layer.
      * @return Array list of all registered User objects in the HTTP response body.
      */
-    @GetMapping(value="getAllUsers")
+    @GetMapping(value="/getAllUsers")
     public List<User> getAllUsers(){
-
         return userService.getAllUsers();
     }
 
@@ -106,7 +98,6 @@ public class UserController {
      */
     @GetMapping(value = "/getUserById/{userId}")
     public User getUserById(@PathVariable("userId") int userId){
-
         return userService.getUserByID(userId);
     }
 
@@ -121,22 +112,27 @@ public class UserController {
     //TODO: might change the session into auth token
     @PutMapping(value = "/updateUser")
     public void updateUser(HttpSession session,@RequestBody User user){
-        if((User)session.getAttribute("loggedInUser")!=null){
+        if(session.getAttribute("loggedInUser")!=null){
+
+            //TODO: need to update with auth tokens
             User current=((User)session.getAttribute("loggedInUser"));
+
+            //TODO: need to update the update user vs update password
             if(!current.getPassword().equals(user.getPassword())){
-                userService.updateUser(user);
                 loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
+                userService.updateUser(user);
             }
             else {
                 loggy.info("The successful update of a user with username: "+user.getUserName()+".");
                 userService.updateUser(user);
             }
-            int id = current.getUserID();
-            User updatedVersion=getUserById(id);
-            session.setAttribute("loggedInUser",updatedVersion);
 
+            User updatedVersion=userService.getUserByID(current.getUserID());
+            session.setAttribute("loggedInUser",updatedVersion);
         }
-        loggy.info("The failed update of a user with username: "+user.getUserName()+".");
+        else{
+            loggy.info("The failed update of a user with username: "+user.getUserName()+".");
+        }
 
     }
 
@@ -150,7 +146,6 @@ public class UserController {
     public void deleteUser(@RequestBody User user){
         userService.deleteUser(user);
         loggy.info("The deletion of a user with username: "+user.getUserName()+".");
-
     }
 
     /**
@@ -164,11 +159,12 @@ public class UserController {
     /**
      * Api endpoint that logs out the user from the application. Redirects to landing page.
      * @param myReq HTTP servlet request
-     * @return Custom Response message (string)
      */
     //TODO: might change the session into auth token
     @GetMapping(value = "logout")
     public void logout(HttpServletRequest myReq){
+
+        //TODO: need to refactor fro auth token
         HttpSession userSession = myReq.getSession();
         loggy.info("The successful logout of the session:"+userSession);
         userSession.invalidate();
@@ -183,10 +179,11 @@ public class UserController {
     @GetMapping(value = "/getLoggedInUser")
     public User getLoggedInUser(HttpSession session){
         //try to get the most updated version of the user
-        if((User)session.getAttribute("loggedInUser")!=null){
+        if(session.getAttribute("loggedInUser")!=null){
             int id = ((User)session.getAttribute("loggedInUser")).getUserID();
             User updatedVersion=userService.getUserByID(id);
             session.setAttribute("loggedInUser",updatedVersion);
+
             loggy.info("The successful retrieval of the loggedInUser");
             return (User) session.getAttribute("loggedInUser");
         }
@@ -199,10 +196,6 @@ public class UserController {
     //upload profile image (might be in update user)
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> f0bc63eda52773db767d832b2d69325e08651ab9
 
 
     public UserController() {
