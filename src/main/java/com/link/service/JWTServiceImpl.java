@@ -20,6 +20,7 @@ public class JWTServiceImpl implements JWTService {
     /**
      * Generate a new JWT with a claim of the given user's username
      * Sets it to expire in 1 hour
+     * TODO allow generation with longer expiry dates if specified
      *
      * @param username the user's username to generate a token for
      * @return a String JWT, unique, which expires in 1 hour
