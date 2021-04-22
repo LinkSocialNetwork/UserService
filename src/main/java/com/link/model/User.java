@@ -1,15 +1,18 @@
 package com.link.model;
 
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@ToString
 @NoArgsConstructor
 @Table(name= "UserAccount")
 public class User {

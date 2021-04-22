@@ -1,8 +1,10 @@
 package com.link.controllers;
 
+
 import com.link.model.User;
 import com.link.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +13,9 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
 
 
 
@@ -18,6 +23,7 @@ import org.apache.log4j.Logger;
 @CrossOrigin
 @RequestMapping("/users")
 public class UserController {
+    private JavaMailSender mailSender;
     UserController userController;
     private UserService userService;
     private PasswordEncoder passwordEncoder;
@@ -35,7 +41,7 @@ public class UserController {
      */
     //TODO: need to figure out how to use auth token for log-in
     @PostMapping("/login")
-    public User logIn(HttpSession session,@RequestBody User user){
+    public User logIn(HttpSession session, @RequestBody User user){
         /*
         since the password is now encrypted the new user must be retrieved by
         its username instead of by a dummy user object, as it was pre pw hashing.
@@ -56,6 +62,27 @@ public class UserController {
             return newUser;
 
         }else return new User();        // should fix this that return empty user
+    }
+
+    /**
+     * Sends an pre written email to to the email address of the user specified in the param
+     * @param user the user who recieves the email
+     * @return the specified user's email address
+     */
+    //TODO might need 2 separate 'sendEmail' methods. 1 for email verification & 1 for forgot password
+    @GetMapping(value = "/sendEmail")
+    public String sendEmail(User user){
+        SimpleMailMessage email = new SimpleMailMessage();
+        String currUserEmail = user.getEmail();
+
+        email.setTo(currUserEmail);
+        email.setSubject("Test subject");
+        email.setText("Test body");
+
+        mailSender.send(email);
+
+        return user.getEmail();
+
     }
 
     /**
@@ -205,9 +232,10 @@ public class UserController {
     }
 
     @Autowired
-    public UserController(UserController userController, UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserController userController, UserService userService, PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
         this.userController = userController;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
     }
 }
