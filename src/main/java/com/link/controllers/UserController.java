@@ -21,38 +21,10 @@ import org.apache.log4j.Logger;
 public class UserController {
     UserController userController;
     private UserService userService;
-    private PasswordEncoder passwordEncoder;
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {
         loggy.setLevel(Level.ALL);
         //loggy.setLevel(Level.ERROR);
-    }
-
-    /**
-     * Api endpoint for the main landing page of application that allows user to login.
-     * @param session HTTP session
-     * @param user User object of the current logged in user.
-     * @return User object
-     */
-    //TODO: need to figure out how to use auth token for log-in
-    //TODO: JWTServiceImpl has all the auth token logic, this just needs to call generateToken(user) to make a new one
-    @PostMapping("/login")
-    public User logIn(HttpSession session,@RequestBody User user){
-        /*
-        since the password is now encrypted the new user must be retrieved by
-        its username instead of by a dummy user object, as it was pre pw hashing.
-        */
-        User newUser= userService.getUserByUserName(user.getUserName());
-
-        //check if the PW input on client side matches the encrypted PW in our DB
-        if(passwordEncoder.matches(user.getPassword(),newUser.getPassword())){
-            //same login logic as before password encryption
-            session.setAttribute("loggedInUser", newUser);
-
-            User currentUser = (User) session.getAttribute("loggedInUser");
-            return newUser;
-
-        }else return new User();        // should fix this that return empty user
     }
 
     /**
@@ -157,21 +129,6 @@ public class UserController {
      */
     //TODO: need to ask team for this kind of implementation, might need to add different service for this
 
-
-    /**
-     * Api endpoint that logs out the user from the application. Redirects to landing page.
-     * @param myReq HTTP servlet request
-     */
-    //TODO: might change the session into auth token
-    @GetMapping(value = "logout")
-    public void logout(HttpServletRequest myReq){
-
-        //TODO: need to refactor fro auth token
-        HttpSession userSession = myReq.getSession();
-        loggy.info("The successful logout of the session:"+userSession);
-        userSession.invalidate();
-    }
-
     /**
      * Api endpoint that retrieves the logged in user from the HTTP session.
      * @param session HTTP session
@@ -207,6 +164,5 @@ public class UserController {
     public UserController(UserController userController, UserService userService, PasswordEncoder passwordEncoder) {
         this.userController = userController;
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 }
