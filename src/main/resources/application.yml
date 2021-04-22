@@ -5,9 +5,9 @@ server:
   port: 0
 spring:
   datasource:
-    url: jdbc:postgresql://revature.cz2dcuuxy0ge.us-west-2.rds.amazonaws.com/userservice
-    password: p4ssw0rd
-    username: adminuser
+    url: jdbc:postgresql://${TRAINING_DB_ENDPOINT}/userservice
+    password: ${TRAINING_DB_PASSWORD}
+    username: ${TRAINING_DB_USERNAME}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
