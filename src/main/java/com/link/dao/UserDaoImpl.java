@@ -1,4 +1,3 @@
-/*
 package com.link.dao;
 
 import com.link.model.User;
@@ -16,37 +15,36 @@ public class UserDaoImpl implements UserDao{
 
     private SessionFactory sesFact;
 
-    */
-/** Authors: Chris B, Christian K, Dang L, Nick H
+    /** Authors: Chris B, Christian K, Dang L, Nick H
      * Creates new user in DB, pass in all user info except ID
      *
      * @param user All info except ID, that's generated in the DB.
-     *
-     *//*
+     */
+
 
     @Override
     public void createUser(User user){
         sesFact.getCurrentSession().save(user);
     }
 
-    */
 /** Authors: Chris B, Christian K, Dang L, Nick H
      * Returns a specific user chosen by ID
      * @param userID target user's ID
      * @return the user with the matching ID
-     *//*
+  */
+
 
     @Override
     public User getUserByID(int userID){
         return sesFact.getCurrentSession().get(User.class, userID);
     }
 
-    */
 /** Authors: Chris B, Christian K, Dang L, Nick H
      * Returns a specific user chosen by username
      * @param userName target user's username
-     * @return the user with the matching username
-     *//*
+     * @return the user with the matching username */
+
+
 
     @Override
     public User getUserByUserName(String userName) {
@@ -60,35 +58,32 @@ public class UserDaoImpl implements UserDao{
         return output;
     }
 
-    */
 /** Authors: Chris B, Christian K, Dang L, Nick H
      * Getting all User as a list from database
      * And return all User
      * @param
-     * @return All user
-     *//*
+     /* @return All user */
+
 
     @Override
     public List<User> getAllUsers() {
         return sesFact.getCurrentSession().createQuery("from UserAccount", User.class).list();
     }
 
-    */
 /** Authors: Chris B, Christian K, Dang L, Nick H
      * Replaces old user data in the DB with new user data given as input. Id should never change!
-     * @param user The new data
-     *//*
+     * @param user The new data */
+
 
     @Override
     public void updateUser(User user){
         sesFact.getCurrentSession().update(user);
     }
 
-    */
 /** Authors: Chris B, Christian K, Dang L, Nick H
      * Deleting user
-     * @param user with current data
-     *//*
+     * @param user with current data */
+
 
     @Override
     public void deleteUser(User user){
@@ -111,4 +106,3 @@ public class UserDaoImpl implements UserDao{
     public UserDaoImpl() {
     }
 }
-*/

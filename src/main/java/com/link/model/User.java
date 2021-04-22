@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
@@ -52,12 +51,12 @@ public class User {
     private Date dateCreated;
 
     //follows
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
     private List<User> following;
 
     //may need to add a "people who are following me" column as well
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
     private List<User> myFollowers;
 }
