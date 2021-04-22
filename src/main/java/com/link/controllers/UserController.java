@@ -35,6 +35,7 @@ public class UserController {
      * @return User object
      */
     //TODO: need to figure out how to use auth token for log-in
+    //TODO: JWTServiceImpl has all the auth token logic, this just needs to call generateToken(user) to make a new one
     @PostMapping("/login")
     public User logIn(HttpSession session,@RequestBody User user){
         /*
