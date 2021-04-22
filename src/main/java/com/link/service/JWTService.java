@@ -30,6 +30,15 @@ public interface JWTService {
     String generateToken(String username);
 
     /**
+     * Overloaded method to use full User object
+     * Uses generateToken(String username)
+     *
+     * @param user the user to generate a token for
+     * @return a String JWT, unique, which expires in 1 hour
+     */
+    String generateToken(User user);
+
+    /**
      * Check if a given token is valid or expired
      *
      * Routes to generateToken if the token has expired and the user is still logged in

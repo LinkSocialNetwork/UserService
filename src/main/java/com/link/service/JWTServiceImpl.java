@@ -56,6 +56,7 @@ public class JWTServiceImpl implements JWTService {
      * @param user the user to generate a token for
      * @return a String JWT, unique, which expires in 1 hour
      */
+    @Override
     public String generateToken(User user)
     {
         return generateToken(user.getUserName());
