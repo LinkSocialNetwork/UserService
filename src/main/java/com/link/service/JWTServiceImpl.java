@@ -13,7 +13,7 @@ import java.util.Date;
  * Implementation of JWTService
  * Contains overloaded methods to use full User objects instead of just the username
  *
- * @author Brandon Dcruz
+ * @author Brandon Dcruz - @cptnbrando
  */
 public class JWTServiceImpl implements JWTService {
 

@@ -1,6 +1,8 @@
 package com.link.model;
 
 
+
+import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
@@ -11,7 +13,11 @@ import java.sql.Date;
 import java.util.List;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@ToString
 @NoArgsConstructor
 @Table(name= "UserAccount")
 public class User {

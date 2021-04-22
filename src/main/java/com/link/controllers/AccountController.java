@@ -20,6 +20,7 @@ public class AccountController {
     private UserServiceImpl userService;
     private JWTServiceImpl jwtService;
     private PasswordEncoder passwordEncoder;
+
     final static Logger loggy = Logger.getLogger(AccountController.class);
     static {
         loggy.setLevel(Level.ALL);
@@ -32,7 +33,6 @@ public class AccountController {
      * @param user User object of the current logged in user.
      * @return User object
      */
-    //TODO: need to figure out how to use auth token for log-in
     //TODO: JWTServiceImpl has all the auth token logic, this just needs to call generateToken(user) to make a new one
     @PostMapping("/login")
     public User login(HttpSession session, @RequestBody User user){

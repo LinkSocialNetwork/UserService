@@ -10,7 +10,7 @@ import com.link.model.User;
  * - TODO ability to set a longer expiry date if the user wants one (like a "stay logged in" button on the login page)
  * - Check for a valid web token
  *
- * @author Brandon Dcruz
+ * @author Brandon Dcruz - @cptnbrando
  */
 public interface JWTService {
     /**
