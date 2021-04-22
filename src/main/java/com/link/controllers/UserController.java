@@ -2,6 +2,7 @@ package com.link.controllers;
 
 import com.link.model.User;
 import com.link.service.UserService;
+import com.link.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +61,7 @@ public class UserController {
      */
     @PostMapping(value = "/insertNewUser")
     public void insertNewUser(@RequestBody User user){
-        User alreadyExists = getUserByUsername(user);
+        User alreadyExists = userService.getUserByUserName(user.getUserName());
         if(alreadyExists == null) {
             userService.createUser(user);
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
