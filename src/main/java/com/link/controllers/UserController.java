@@ -60,7 +60,7 @@ public class UserController {
      */
     @PostMapping(value = "/insertNewUser")
     public void insertNewUser(@RequestBody User user){
-        User alreadyExists = getUserByUsername(user);
+        User alreadyExists = userService.getUserByUserName(user.getUserName());
         if(alreadyExists == null) {
             userService.createUser(user);
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
