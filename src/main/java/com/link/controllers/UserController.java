@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 
 
 @RestController
@@ -18,6 +21,11 @@ public class UserController {
     UserController userController;
     private UserService userService;
     private PasswordEncoder passwordEncoder;
+    final static Logger loggy = Logger.getLogger(UserController.class);
+    static {
+        loggy.setLevel(Level.ALL);
+        //loggy.setLevel(Level.ERROR);
+    }
 
     /**
      * Api endpoint for the main landing page of application that allows user to login.
@@ -60,11 +68,11 @@ public class UserController {
         User alreadyExists = getUserByUsername(user);
         if(alreadyExists == null) {
             userService.createUser(user);
-//            loggy.info("The successful creation of a user with username: "+user.getUsername()+".");
+            loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
 
         }
         else {
-//            loggy.info("The failed creation of a user with username: "+user.getUsername()+".");
+            loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
 
         }
     }
@@ -76,7 +84,7 @@ public class UserController {
      */
     @PostMapping(value = "/getByUsername")
     public User getUserByUsername(@RequestBody User user) {
-//        loggy.info("An attempt to retrieve a user with username: "+user.getUserName()+".");
+        loggy.info("An attempt to retrieve a user with username: "+user.getUserName()+".");
         return userService.getUserByUserName(user.getUserName());
     }
 
@@ -117,10 +125,10 @@ public class UserController {
             User current=((User)session.getAttribute("loggedInUser"));
             if(!current.getPassword().equals(user.getPassword())){
                 userService.updateUser(user);
-//                loggy.info("The successful update(with password) of a user with username: "+user.getUsername()+".");
+                loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
             }
             else {
-//                loggy.info("The successful update of a user with username: "+user.getUsername()+".");
+                loggy.info("The successful update of a user with username: "+user.getUserName()+".");
                 userService.updateUser(user);
             }
             int id = current.getUserID();
@@ -128,7 +136,7 @@ public class UserController {
             session.setAttribute("loggedInUser",updatedVersion);
 
         }
-//        loggy.info("The failed update of a user with username: "+user.getUsername()+".");
+        loggy.info("The failed update of a user with username: "+user.getUserName()+".");
 
     }
 
@@ -141,7 +149,7 @@ public class UserController {
     @DeleteMapping(value = "/deleteUser")
     public void deleteUser(@RequestBody User user){
         userService.deleteUser(user);
-//        loggy.info("The deletion of a user with username: "+user.getUsername()+".");
+        loggy.info("The deletion of a user with username: "+user.getUserName()+".");
 
     }
 
@@ -162,7 +170,7 @@ public class UserController {
     @GetMapping(value = "logout")
     public void logout(HttpServletRequest myReq){
         HttpSession userSession = myReq.getSession();
-//        loggy.info("The successful logout of the session:"+userSession);
+        loggy.info("The successful logout of the session:"+userSession);
         userSession.invalidate();
     }
 
@@ -179,11 +187,11 @@ public class UserController {
             int id = ((User)session.getAttribute("loggedInUser")).getUserID();
             User updatedVersion=userService.getUserByID(id);
             session.setAttribute("loggedInUser",updatedVersion);
-//            loggy.info("The successful retrieval of the loggedInUser");
+            loggy.info("The successful retrieval of the loggedInUser");
             return (User) session.getAttribute("loggedInUser");
         }
         else{
-//            loggy.info("The failed retrieval of the loggedInUser");
+            loggy.info("The failed retrieval of the loggedInUser");
             return null;
         }
     }
