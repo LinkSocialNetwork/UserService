@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.link.model.User;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
@@ -15,6 +16,7 @@ import java.util.Date;
  *
  * @author Brandon Dcruz - @cptnbrando
  */
+@Service("JWTService")
 public class JWTServiceImpl implements JWTService {
 
     /**
@@ -88,9 +90,6 @@ public class JWTServiceImpl implements JWTService {
         catch (JWTVerificationException exception)
         {
             System.out.println("Bad token! (Expired or bad input)");
-
-            //TODO if token is expired but user is still using the site, generate a new token
-            //TODO if token is expired, route to login
             return false;
         }
     }

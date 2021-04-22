@@ -25,7 +25,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 @RequestMapping("/users")
 public class UserController {
     private JavaMailSender mailSender;
-    UserController userController;
+//    UserController userController;
     private UserService userService;
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {
@@ -188,8 +188,7 @@ public class UserController {
     }
 
     @Autowired
-    public UserController(UserController userController, UserService userService, JavaMailSender mailSender) {
-        this.userController = userController;
+    public UserController(UserService userService, JavaMailSender mailSender) {
         this.userService = userService;
         this.mailSender = mailSender;
     }

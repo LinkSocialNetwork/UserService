@@ -19,7 +19,6 @@ public class AccountController {
 
     private UserServiceImpl userService;
     private JWTServiceImpl jwtService;
-    private PasswordEncoder passwordEncoder;
 
     final static Logger loggy = Logger.getLogger(AccountController.class);
     static {
@@ -43,14 +42,17 @@ public class AccountController {
         User newUser= userService.getUserByUserName(user.getUserName());
 
         //check if the PW input on client side matches the encrypted PW in our DB
-        if(passwordEncoder.matches(user.getPassword(),newUser.getPassword())){
-            //same login logic as before password encryption
-            session.setAttribute("loggedInUser", newUser);
+//        if(passwordEncoder.matches(user.getPassword(),newUser.getPassword())){
+//            //same login logic as before password encryption
+//            session.setAttribute("loggedInUser", newUser);
+//
+//            User currentUser = (User) session.getAttribute("loggedInUser");
+//            return newUser;
+//
+//        }else return new User();        // should fix this that return empty user
 
-            User currentUser = (User) session.getAttribute("loggedInUser");
-            return newUser;
-
-        }else return new User();        // should fix this that return empty user
+        //TODO This used to use Spring Security's PasswordEncoder interface, but we don't need it
+        return null;
     }
 
     /**
@@ -75,9 +77,8 @@ public class AccountController {
     }
 
     @Autowired
-    public AccountController(UserServiceImpl userService, JWTServiceImpl jwtService, PasswordEncoder passwordEncoder) {
+    public AccountController(UserServiceImpl userService, JWTServiceImpl jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;
-        this.passwordEncoder = passwordEncoder;
     }
 }

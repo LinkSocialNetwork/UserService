@@ -18,7 +18,7 @@ public interface JWTService {
      * Uses an environment variable for a super secret code
      * To verify, we only need the algorithm, claims are irrelevant (they just change the body and make it unique)
      */
-    static Algorithm algorithm = Algorithm.HMAC256(System.getenv("LINK_TOKEN_SECRET"));
+    Algorithm algorithm = Algorithm.HMAC256(System.getenv("LINK_TOKEN_SECRET"));
 
     /**
      * Generate a new JWT with a claim of the given user's username
