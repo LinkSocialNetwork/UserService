@@ -1,7 +1,12 @@
 package com.link.model;
 
 
+
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -31,7 +36,7 @@ public class User {
     private String lastName;
 
     @Column(name= "password", unique = false, nullable = false)
-    @Transient
+    @JsonIgnore
     private String password;
 
     @Column(name= "dob", unique = false, nullable = false)
