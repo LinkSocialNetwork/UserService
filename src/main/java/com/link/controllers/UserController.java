@@ -22,7 +22,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
     private JavaMailSender mailSender;
 //    UserController userController;
@@ -53,7 +53,7 @@ public class UserController {
         return user.getEmail();
 
     }
-
+    
 //    /**
 //     * Api endpoint that receives User object to use username to retreive User object from service layer.
 //     * @param user User object from HTTP request.

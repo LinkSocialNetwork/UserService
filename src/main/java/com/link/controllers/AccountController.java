@@ -29,7 +29,7 @@ public class AccountController {
     }
 
     /**
-     * Api endpoint that inserts User object into the application depending on whether they exists or not.
+     * Api endpoint that inserts User object into the application depending on whether they exist or not.
      * @param user User object.
      * @return Custom response message (string).
      */
@@ -59,6 +59,11 @@ public class AccountController {
 
     /**
      * Api endpoint for the main landing page of application that allows user to login.
+     *
+     * Uses PasswordAuthentication to check if the entered password matches the hashed password in the db
+     *
+     * Generates a new JWT if there's not a valid one already
+     *
      * @param session HTTP session
      * @param user User object of the current logged in user.
      * @return User object
@@ -66,10 +71,6 @@ public class AccountController {
     @PostMapping("/login")
     public User login(HttpSession session, @RequestBody User user)
     {
-        /*
-        since the password is now encrypted the new user must be retrieved by
-        its username instead of by a dummy user object, as it was pre pw hashing.
-        */
         User newUser = userService.getUserByUserName(user.getUserName());
 
         if (newUser == null)
@@ -114,7 +115,7 @@ public class AccountController {
      * @param myReq HTTP servlet request
      */
     //TODO: might change the session into auth token
-    //If so, we would need to parse a User @RequestBody
+    //If so, we would need to parse a User @RequestBody and have the front end send the user object
     @GetMapping(value = "/logout")
     public void logout(HttpServletRequest myReq)
     {
