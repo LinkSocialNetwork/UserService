@@ -54,23 +54,6 @@ public class UserController {
 
     }
 
-    /**
-     * Api endpoint that inserts User object into the application depending on whether they exists or not.
-     * @param user User object.
-     * @return Custom response message (string).
-     */
-    @PostMapping(value = "/insertNewUser")
-    public void insertNewUser(@RequestBody User user){
-        User alreadyExists = userService.getUserByUserName(user.getUserName());
-        if(alreadyExists == null) {
-            userService.createUser(user);
-            loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
-        }
-        else {
-            loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
-        }
-    }
-
 //    /**
 //     * Api endpoint that receives User object to use username to retreive User object from service layer.
 //     * @param user User object from HTTP request.

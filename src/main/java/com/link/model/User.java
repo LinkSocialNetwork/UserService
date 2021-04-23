@@ -57,6 +57,9 @@ public class User {
     @Column(name= "date_created", unique = false, nullable = false)
     private Date dateCreated;
 
+    @Column(name = "authToken", unique = true, nullable = true)
+    private String authToken;
+
     //follows
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name= "user_id", nullable = true)
