@@ -20,32 +20,7 @@ public interface JWTService {
      */
     Algorithm algorithm = Algorithm.HMAC256(System.getenv("LINK_TOKEN_SECRET"));
 
-    /**
-     * Generate a new JWT with a claim of the given user's username
-     * Sets it to expire in 1 hour
-     *
-     * @param username the user's username to generate a token for
-     * @return a String JWT, unique, which expires in 1 hour
-     */
     String generateToken(String username);
-
-    /**
-     * Overloaded method to use full User object
-     * Uses generateToken(String username)
-     *
-     * @param user the user to generate a token for
-     * @return a String JWT, unique, which expires in 1 hour
-     */
     String generateToken(User user);
-
-    /**
-     * Check if a given token is valid or expired
-     *
-     * Routes to generateToken if the token has expired and the user is still logged in
-     * Routes to login if the token has expired / is invalid
-     *
-     * @param token the token to check
-     * @return if the token is good or bad
-     */
     Boolean checkToken(String token);
 }

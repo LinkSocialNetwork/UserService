@@ -61,7 +61,10 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     @Column(name= "date_created", unique = false)
     private Date dateCreated;
-/*
+
+    @Column(name = "authToken", unique = true, nullable = true)
+    private String authToken;
+
     //follows
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
@@ -70,5 +73,5 @@ public class User {
     //may need to add a "people who are following me" column as well
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
-    private List<User> myFollowers;*/
+    private List<User> myFollowers;
 }
