@@ -2,14 +2,17 @@ package com.link.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -19,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @NoArgsConstructor
-@Table(name= "UserAccount")
+@Table(name= "user_account")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +42,8 @@ public class User {
     @JsonIgnore
     private String password;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     @Column(name= "dob", unique = false, nullable = false)
     private Date dob;
 
@@ -48,13 +53,17 @@ public class User {
     @Column(name= "bio", unique = false, nullable = true)
     private String bio;
 
-    @Column(name= "profile_img_url", unique = false, nullable = false)
+    @Column(name= "profile_img_url", unique = false)
+    @ColumnDefault("/profile-image")
     private String profileImg;
 
     @Column(name= "business_name", unique = false, nullable = true)
     private String businessName;
 
-    @Column(name= "date_created", unique = false, nullable = false)
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
+    @Column(name= "date_created", unique = false)
     private Date dateCreated;
 
     //follows

@@ -22,7 +22,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
     private JavaMailSender mailSender;
 //    UserController userController;
@@ -61,14 +61,16 @@ public class UserController {
      */
     @PostMapping(value = "/insertNewUser")
     public void insertNewUser(@RequestBody User user){
-        User alreadyExists = userService.getUserByUserName(user.getUserName());
+        /*User alreadyExists = userService.getUserByUserName(user.getUserName());
         if(alreadyExists == null) {
             userService.createUser(user);
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
         }
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
-        }
+        }*/
+        System.out.println(user);
+        userService.createUser(user);
     }
 
 //    /**
