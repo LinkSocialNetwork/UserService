@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class AccountController {
 
     private UserServiceImpl userService;
@@ -34,11 +34,13 @@ public class AccountController {
      * @return Custom response message (string).
      */
     @PostMapping(value = "/insertNewUser")
-    public void insertNewUser(@RequestBody User user){
+    public void insertNewUser(@RequestBody User user)
+    {
         User alreadyExists = userService.getUserByUserName(user.getUserName());
+
         if(alreadyExists == null)
         {
-            // Initialize user with null token
+            // Set the user with a null token
             user.setAuthToken(null);
 
             // This will hash the password and set it to the user before sending it to the db
@@ -98,7 +100,7 @@ public class AccountController {
                 session.setAttribute("loggedInUser", newUser);
                 User currentUser = (User) session.getAttribute("loggedInUser");
 
-                //TODO Redirect to frontend
+                //TODO Redirect to frontend or set token here
 
                 return newUser;
             }
@@ -114,8 +116,7 @@ public class AccountController {
      * Api endpoint that logs out the user from the application. Redirects to landing page.
      * @param myReq HTTP servlet request
      */
-    //TODO: might change the session into auth token
-    //If so, we would need to parse a User @RequestBody and have the front end send the user object
+    //TODO: We need to parse a User @RequestBody and have the front end send the user object
     @GetMapping(value = "/logout")
     public void logout(HttpServletRequest myReq)
     {
@@ -156,9 +157,9 @@ public class AccountController {
     }
 
     @Autowired
-    public AccountController(UserServiceImpl userService, JWTServiceImpl jwtService, PasswordAuthentication authorizer) {
+    public AccountController(UserServiceImpl userService, JWTServiceImpl jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;
-        this.authorizer = authorizer;
+        this.authorizer = new PasswordAuthentication();
     }
 }
