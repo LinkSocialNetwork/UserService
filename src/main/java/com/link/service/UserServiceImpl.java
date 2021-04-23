@@ -1,9 +1,9 @@
 package com.link.service;
 
 import com.link.dao.UserDao;
-import com.link.model.User;
-import org.springframework.stereotype.Service;
 
+import org.springframework.stereotype.Service;
+import com.link.model.User;
 import java.util.List;
 
 @Service("UserService")
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User logIn(User user) {
         User fromDB= userDao.getUserByUserName(user.getUserName());
-        if(user.getPassword().equals(fromDB.getPassword())){
+        if(user.find().equals(fromDB.getPassword())){
             return fromDB;
         }
         return null;

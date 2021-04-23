@@ -10,8 +10,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.Null;
 import java.util.List;
 
-@Transactional
-@Repository("userRepo")
+
 public class UserDaoImpl implements UserDao{
 
     private SessionFactory sesFact;
