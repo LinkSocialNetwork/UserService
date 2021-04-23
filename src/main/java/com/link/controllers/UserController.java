@@ -44,7 +44,8 @@ public class UserController {
         SimpleMailMessage email = new SimpleMailMessage();
         String currUserEmail = user.getEmail();
 
-        email.setTo(currUserEmail);
+        //email.setTo(currUserEmail);
+        email.setTo("nicholas.haselden@revature.net");
         email.setSubject("Test subject");
         email.setText("Test body");
 
