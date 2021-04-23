@@ -21,18 +21,18 @@ spring:
     username: ${LINK_DB_USERNAME}
     password: ${LINK_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    jpa:
-      database-platform: org.hibernate.dialect.PostgreSQLDialect
-      show-sql: false
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
       hibernate:
-        ddl-auto: create
-      properties:
-        hibernate:
-          temp:
-            use_jdbc_metadata_defaults: false
-          jdbc:
-            lob:
-              non_contextual_creation: true
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
 eureka:
   client:
     service-url:
