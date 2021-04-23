@@ -30,7 +30,16 @@ class JWTServiceImplTest {
 
     @Test
     void checkToken() {
+        // Valid token
         String testToken = jwtService.generateToken("Test");
         assertTrue(jwtService.checkToken(testToken));
+
+        // Invalid token
+        testToken+="ahhh";
+        assertFalse(jwtService.checkToken(testToken));
+
+        // Generated JWT
+        String randomToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.Zqe4THpO8zZwF7S4QlNVU9beHqV25V8HDIqZVQjLxkQ";
+        assertFalse(jwtService.checkToken(randomToken));
     }
 }

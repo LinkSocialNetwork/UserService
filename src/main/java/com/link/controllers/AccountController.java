@@ -79,16 +79,17 @@ public class AccountController {
         }
         else
         {
-            //TODO
-            if(jwtService.checkToken(newUser.getAuthToken()))
-            {
-
-            }
-
             String entered = user.getPassword();
 
             if(authorizer.authenticate(entered, newUser.getPassword()))
             {
+                // If there's already a non-expired token, redirect to feed
+                if(jwtService.checkToken(newUser.getAuthToken()))
+                {
+                    //User is logged in: redirect to feed
+                    return newUser;
+                }
+
                 // This will generate a token and add it to the user
                 newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
                 userService.updateUser(newUser);
@@ -113,18 +114,37 @@ public class AccountController {
      * @param myReq HTTP servlet request
      */
     //TODO: might change the session into auth token
+    //If so, we would need to parse a User @RequestBody
     @GetMapping(value = "/logout")
-    public void logout(HttpSession session, HttpServletRequest myReq)
+    public void logout(HttpServletRequest myReq)
     {
+        HttpSession userSession = myReq.getSession();
+
         // This will set the current JWT auth token to null and update the db
-        User currentUser = (User) session.getAttribute("loggedInUser");
+        // TODO the session's won't work, so we need to get the user by their authtoken or username
+        User currentUser = (User) userSession.getAttribute("loggedInUser");
         currentUser.setAuthToken(null);
         userService.updateUser(currentUser);
 
-        //TODO: need to refactor from auth token
-        HttpSession userSession = myReq.getSession();
         loggy.info("The successful logout of the session:"+userSession);
         userSession.invalidate();
+    }
+
+    /**
+     * Get mapping to check if a user object's token is valid
+     *
+     * @param user the User to check
+     * @return if there's a valid token
+     */
+    @GetMapping(value = "/checkToken")
+    public boolean checkToken(@RequestBody User user)
+    {
+        if(user.getAuthToken() != null)
+        {
+            return jwtService.checkToken(user.getAuthToken());
+        }
+
+        return false;
     }
 
 
