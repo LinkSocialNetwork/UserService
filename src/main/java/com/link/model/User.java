@@ -49,6 +49,7 @@ public class User {
     @Column(name= "bio", unique = false, nullable = true)
     private String bio;
 
+    @ColumnDefault(value = "'blahhhhh'")
     @Column(name= "profile_img_url", unique = false)
     private String profileImg;
 
