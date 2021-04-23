@@ -16,13 +16,10 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-//@Data
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-@ToString
 @NoArgsConstructor
-@Table(name= "user_account")
+@Table(name= "UserAccount")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +36,6 @@ public class User {
     private String lastName;
 
     @Column(name= "password", unique = false, nullable = false)
-    @JsonIgnore
     private String password;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -54,7 +50,6 @@ public class User {
     private String bio;
 
     @Column(name= "profile_img_url", unique = false)
-    @ColumnDefault("/profile-image")
     private String profileImg;
 
     @Column(name= "business_name", unique = false, nullable = true)
@@ -65,14 +60,14 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     @Column(name= "date_created", unique = false)
     private Date dateCreated;
-
+/*
     //follows
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
     private List<User> following;
 
     //may need to add a "people who are following me" column as well
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
-    private List<User> myFollowers;
+    private List<User> myFollowers;*/
 }
