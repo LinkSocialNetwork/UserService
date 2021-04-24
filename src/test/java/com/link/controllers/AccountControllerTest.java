@@ -17,7 +17,7 @@ class AccountControllerTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserServiceImpl();
+        //userService = new UserServiceImpl();
         jwtService = new JWTServiceImpl();
         authorizer = new PasswordAuthentication();
     }
