@@ -2,6 +2,7 @@ package com.link.service;
 
 import com.link.dao.UserDao;
 import com.link.model.User;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User getUserByID(int userID) {
-        return userDao.findById(userID).orElseThrow(EntityNotFoundException::new);
+        return userDao.findById(userID);
     }
 
     /** Authors: Chris B, Christian K, Dang L, Nick H
@@ -73,7 +74,15 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User getUserByUserName(String userName) {
-        return userDao.findByUserName(userName);
+        // Added a try catch so if it can't find the user
+        // it returns null
+        try {
+            return userDao.findByUserName(userName);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     /** Authors: Chris B, Christian K, Dang L, Nick H

@@ -5,6 +5,10 @@ package com.link.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+<<<<<<< HEAD
+=======
+//import jdk.nashorn.internal.ir.annotations.Ignore;
+>>>>>>> f13c3c1837727b87794e440021511189091ec9c5
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -59,7 +63,10 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
     @Column(name= "date_created", unique = false)
     private Date dateCreated;
-/*
+
+    @Column(name = "authToken", unique = true, nullable = true)
+    private String authToken;
+
     //follows
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
@@ -68,5 +75,5 @@ public class User {
     //may need to add a "people who are following me" column as well
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
-    private List<User> myFollowers;*/
+    private List<User> myFollowers;
 }
