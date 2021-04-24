@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User getUserByID(int userID) {
-        return userDao.findById(userID).orElseThrow(EntityNotFoundException::new);
+        return userDao.findById(userID);
     }
 
     /** Authors: Chris B, Christian K, Dang L, Nick H
