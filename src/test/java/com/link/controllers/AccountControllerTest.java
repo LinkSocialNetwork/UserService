@@ -11,15 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AccountControllerTest {
 
-    private UserServiceImpl userService;
-    private JWTServiceImpl jwtService;
-    private PasswordAuthentication authorizer;
+    private AccountController accountController;
 
     @BeforeEach
     void setUp() {
-        userService = new UserServiceImpl();
-        jwtService = new JWTServiceImpl();
-        authorizer = new PasswordAuthentication();
+        accountController = new AccountController();
     }
 
     @AfterEach
