@@ -24,6 +24,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 @CrossOrigin
 @RequestMapping("/api/users")
 public class UserController {
+
     private JavaMailSender mailSender;
 //    UserController userController;
     private UserService userService;
@@ -33,9 +34,11 @@ public class UserController {
         //loggy.setLevel(Level.ERROR);
     }
 
+    //----------------------------------------------------------------------------------------------//
+
     /**
      * Sends an pre written email to to the email address of the user specified in the param
-     * @param user the user who recieves the email
+     * @param user the user who receives the email
      * @return the specified user's email address
      */
     //TODO might need 2 separate 'sendEmail' methods. 1 for email verification & 1 for forgot password
@@ -53,6 +56,40 @@ public class UserController {
         return user.getEmail();
 
     }
+
+    //----------------------------------------------------------------------------------------------//
+
+    /**
+     * <p>Sends an email to the user with the username rovided</p>
+     * @param username - The username of the user to send an email to
+     * @return A string containing a message as to whether or not the username was found in the database.
+     */
+    @PostMapping("/resetPassword")
+    public String resetPassword(String username){
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        String emailAddress = "";
+        String success = "Email sent.";
+        String failure = "Username not found, try again.";
+
+        try{
+            emailAddress = userService.getUserByUserName(username).getEmail();
+        } catch(NullPointerException e){
+            e.printStackTrace();
+            loggy.error("User attempted password reset, but no user with username: " + username + " was found.");
+            return failure;
+        }
+        message.setTo(emailAddress);
+        message.setSubject("Password Reset");
+        message.setText("A request was made to reset the password for your Link account " +
+                username + ". If you did not send a request, please disregard this email. Otherwise," +
+                "follow the lik below to be redirected to the reset password page. \n");
+        mailSender.send(message);
+
+        return success;
+    }
+
+    //----------------------------------------------------------------------------------------------//
 
     /**
      * Api endpoint that inserts User object into the application depending on whether they exists or not.
@@ -72,6 +109,8 @@ public class UserController {
         System.out.println(user);
         userService.createUser(user);
     }
+
+    //----------------------------------------------------------------------------------------------//
 
 //    /**
 //     * Api endpoint that receives User object to use username to retreive User object from service layer.
@@ -93,6 +132,7 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    //----------------------------------------------------------------------------------------------//
 
     /**
      * Api endpoint that returns a User object from the service layer.
@@ -103,6 +143,8 @@ public class UserController {
     public User getUserById(@PathVariable("userId") int userId){
         return userService.getUserByID(userId);
     }
+
+    //----------------------------------------------------------------------------------------------//
 
     /**
      * Api endpoint that updates the User in the application. Receives updated User object
@@ -139,6 +181,8 @@ public class UserController {
 
     }
 
+    //----------------------------------------------------------------------------------------------//
+
     /**
      * Api endpoint that will remove a User from the application. Returns message when the user
      * is deleted through the HTTP response body.
@@ -151,12 +195,16 @@ public class UserController {
         loggy.info("The deletion of a user with username: "+user.getUserName()+".");
     }
 
+    //----------------------------------------------------------------------------------------------//
+
     /**
      * Api endpoint that sends an email to User's email with a randomly generated password.
      * @param userName Username of User current user (string).
      * @return Custom response message (string).
      */
     //TODO: need to ask team for this kind of implementation, might need to add different service for this
+
+    //----------------------------------------------------------------------------------------------//
 
     /**
      * Api endpoint that retrieves the logged in user from the HTTP session.
@@ -184,7 +232,7 @@ public class UserController {
     //upload profile image (might be in update user)
 
 
-
+    //----------------------------------------------------------------------------------------------//
 
     public UserController() {
     }
