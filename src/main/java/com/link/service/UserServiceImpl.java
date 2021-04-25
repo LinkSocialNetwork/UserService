@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService{
      * @param user with current data
      */
     @Override
-    public void deleteUser(User user) {
-        userDao.delete(user);
+    public void deleteUser(int userId) {
+        userDao.deleteById(userId);
     }
 }
