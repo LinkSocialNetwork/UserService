@@ -19,8 +19,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 
-
-
 @RestController
 @RequestMapping("/api/userservice")
 public class UserController {
