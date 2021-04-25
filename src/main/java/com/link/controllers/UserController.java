@@ -22,7 +22,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200",  allowCredentials = "true", allowedHeaders = "true")
 @RequestMapping("/api/userservice")
 public class UserController {
 
