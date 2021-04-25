@@ -189,7 +189,7 @@ public class UserController {
      * @param user User object.
      * @return Custom response message (string).
      */
-    // Christian Kent -- working in postman but must be given ID!
+    // Christian Kent -- working in postman but must be given ID(in postman)!
     @DeleteMapping(value = "/deleteUser")
     public void deleteUser(@RequestBody User user){
         userService.deleteUser(user);
