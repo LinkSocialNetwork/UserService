@@ -33,7 +33,7 @@ public class AccountController {
      * @param user User object.
      * @return Custom response message (string).
      */
-    @PostMapping(value = "/insertNewUser")
+    @PostMapping(value = "/insertNewUser2")
     public void insertNewUser(@RequestBody User user)
     {
         User alreadyExists = userService.getUserByUserName(user.getUserName());
