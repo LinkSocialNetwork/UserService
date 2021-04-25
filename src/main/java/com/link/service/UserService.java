@@ -11,5 +11,5 @@ public interface UserService {
     public User getUserByID(int userID);
     public User getUserByUserName(String userName);
     public void updateUser(User user);
-    public void deleteUser(User user);
+    public void deleteUser(int userId);
 }
