@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -46,6 +47,10 @@ public class AccountController {
             String inputPass = user.getPassword();
             inputPass = authorizer.hash(inputPass);
             user.setPassword(inputPass);
+
+            //When a user is created it will ping the post service to create a user also
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
 
             userService.createUser(user);
 

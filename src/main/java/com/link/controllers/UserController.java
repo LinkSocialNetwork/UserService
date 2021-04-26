@@ -50,8 +50,11 @@ public class UserController {
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
         }*/
+
+        //When a user is created it will ping the post service to create a user also
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity("http://localhost:9080/api/post/user/duplicateUser",user, User.class);
+        restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+
         userService.createUser(user);
     }
 
