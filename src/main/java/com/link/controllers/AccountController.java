@@ -39,8 +39,6 @@ public class AccountController {
 
         if(alreadyExists == null)
         {
-            // Set the user with a null token
-            user.setAuthToken(null);
 
             // This will hash the password and set it to the user before sending it to the db
             String inputPass = user.getPassword();
@@ -85,6 +83,14 @@ public class AccountController {
 
             if(authorizer.authenticate(entered, newUser.getPassword()))
             {
+
+                // This will generate a token and add it to the user
+                if (newUser.getAuthToken() == null || !jwtService.checkToken(newUser.getAuthToken())) {
+
+                    newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
+                    userService.updateUser(newUser);
+                }
+
                 // If there's already a non-expired token, redirect to feed
                 if(jwtService.checkToken(newUser.getAuthToken()))
                 {
@@ -92,12 +98,8 @@ public class AccountController {
                     return newUser;
                 }
 
-                // This will generate a token and add it to the user
-                newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
-                userService.updateUser(newUser);
-
-                session.setAttribute("loggedInUser", newUser);
-                User currentUser = (User) session.getAttribute("loggedInUser");
+//                session.setAttribute("loggedInUser", newUser);
+//                User currentUser = (User) session.getAttribute("loggedInUser");
 
                 //TODO Redirect to frontend or set token here
 
@@ -145,7 +147,9 @@ public class AccountController {
             return jwtService.checkToken(user.getAuthToken());
         }
 
-        return false;
+        else {
+            return false;
+        }
     }
 
 
