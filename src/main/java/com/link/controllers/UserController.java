@@ -32,7 +32,10 @@ public class UserController {
         //loggy.setLevel(Level.ERROR);
     }
 
-    //----------------------------------------------------------------------------------------------//
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+//----------------------------------------------------------------------------------------------//
 
     /**
      * Api endpoint that inserts User object into the application depending on whether they exists or not.
@@ -129,7 +132,7 @@ public class UserController {
     /**
      * Api endpoint that will remove a User from the application. Returns message when the user
      * is deleted through the HTTP response body.
-     * @param user User object.
+     * @param userId User object.
      * @return Custom response message (string).
      */
     // Christian Kent -- working in postman but must be given ID(in postman)!
