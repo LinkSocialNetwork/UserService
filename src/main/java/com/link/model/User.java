@@ -5,10 +5,8 @@ package com.link.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-<<<<<<< HEAD
-=======
 //import jdk.nashorn.internal.ir.annotations.Ignore;
->>>>>>> f13c3c1837727b87794e440021511189091ec9c5
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
