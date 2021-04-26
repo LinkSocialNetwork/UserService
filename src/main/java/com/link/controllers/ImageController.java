@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-@CrossOrigin(origins = "http://localhost:4200",  allowCredentials = "true", allowedHeaders = "true")
 @RestController
 @RequestMapping("/api/userservice")
 public class ImageController {

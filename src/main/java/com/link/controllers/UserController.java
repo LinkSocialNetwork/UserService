@@ -17,17 +17,15 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-
-
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200",  allowCredentials = "true", allowedHeaders = "true")
 @RequestMapping("/api/userservice")
 public class UserController {
 
     private JavaMailSender mailSender;
-//    UserController userController;
+    //    UserController userController;
     private UserService userService;
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {
@@ -35,7 +33,10 @@ public class UserController {
         //loggy.setLevel(Level.ERROR);
     }
 
-    //----------------------------------------------------------------------------------------------//
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+//----------------------------------------------------------------------------------------------//
 
     /**
      * Api endpoint that inserts User object into the application depending on whether they exists or not.
@@ -52,7 +53,11 @@ public class UserController {
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
         }*/
-        System.out.println(user);
+
+        //When a user is created it will ping the post service to create a user also
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+
         userService.createUser(user);
 
     }
