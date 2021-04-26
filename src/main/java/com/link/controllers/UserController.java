@@ -25,7 +25,7 @@ import org.springframework.web.client.RestTemplate;
 public class UserController {
 
     private JavaMailSender mailSender;
-//    UserController userController;
+    //    UserController userController;
     private UserService userService;
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {

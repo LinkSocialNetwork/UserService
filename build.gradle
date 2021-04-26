@@ -35,8 +35,13 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+
+	// https://mvnrepository.com/artifact/org.postgresql/postgresql
+	// OUR SQL DRIVER
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
 
+	// https://mvnrepository.com/artifact/log4j/log4j
 	implementation group: 'log4j', name: 'log4j', version: '1.2.17'
 
 	// https://mvnrepository.com/artifact/com.auth0/java-jwt
