@@ -17,6 +17,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
@@ -52,7 +53,8 @@ public class UserController {
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
         }*/
-        System.out.println(user);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForEntity("http://localhost:9080/api/post/user/duplicateUser",user, User.class);
         userService.createUser(user);
     }
 
