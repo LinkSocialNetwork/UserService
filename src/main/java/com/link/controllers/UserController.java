@@ -16,13 +16,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-
-
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/users")
+@RequestMapping("/api/userservice")
 public class UserController {
 
     private JavaMailSender mailSender;
@@ -60,7 +59,7 @@ public class UserController {
     //----------------------------------------------------------------------------------------------//
 
     /**
-     * <p>Sends an email to the user with the username rovided</p>
+     * <p>Sends an email to the user with the username provided</p>
      * @param username - The username of the user to send an email to
      * @return A string containing a message as to whether or not the username was found in the database.
      */
@@ -96,7 +95,7 @@ public class UserController {
      * @param user User object.
      * @return Custom response message (string).
      */
-    @PostMapping(value = "/insertNewUser")
+//    @PostMapping(value = "/insertNewUser")
     public void insertNewUser(@RequestBody User user){
         /*User alreadyExists = userService.getUserByUserName(user.getUserName());
         if(alreadyExists == null) {
@@ -106,7 +105,8 @@ public class UserController {
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
         }*/
-        System.out.println(user);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForEntity("http://localhost:9080/api/post/user/duplicateUser",user, User.class);
         userService.createUser(user);
     }
 

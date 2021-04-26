@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/users")
+@RequestMapping("/api/userservice")
 public class AccountController {
 
     private UserServiceImpl userService;
