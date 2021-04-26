@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/api/userservice")
@@ -42,7 +44,9 @@ public class AccountController {
 
             // This will hash the password and set it to the user before sending it to the db
             String inputPass = user.getPassword();
-            inputPass = authorizer.hash(inputPass);
+            System.out.println("firstpassword:" + inputPass);
+            inputPass = hashPassword(inputPass);
+            System.out.println("secondpassword:" + inputPass);
             user.setPassword(inputPass);
 
             userService.createUser(user);
@@ -80,8 +84,13 @@ public class AccountController {
         else
         {
             String entered = user.getPassword();
+            System.out.println("Entered1: " + entered);
+            entered = hashPassword(entered);
 
-            if(authorizer.authenticate(entered, newUser.getPassword()))
+            System.out.println("Entered2: " + entered);
+            System.out.println("User password: " + newUser.getPassword());
+
+            if(entered.equals(newUser.getPassword()))
             {
 
                 // This will generate a token and add it to the user
@@ -89,11 +98,14 @@ public class AccountController {
 
                     newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
                     userService.updateUser(newUser);
+
+                    System.out.println(jwtService.checkToken(newUser.getAuthToken()));
                 }
 
                 // If there's already a non-expired token, redirect to feed
                 if(jwtService.checkToken(newUser.getAuthToken()))
                 {
+                    System.out.println("getting new tokennNnNn");
                     //User is logged in: redirect to feed
                     return newUser;
                 }
@@ -108,6 +120,7 @@ public class AccountController {
             else
             {
                 loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
+                System.out.println("Login: can't authenticate password! Received: " + user.getUserName());
                 return null;
             }
         }
@@ -152,7 +165,31 @@ public class AccountController {
         }
     }
 
+    public String hashPassword(String password) {
 
+        String generatedPassword = null;
+        try {
+            // Create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            //Add password bytes to digest
+            md.update(password.getBytes());
+            //Get the hash's bytes
+            byte[] bytes = md.digest();
+            //This bytes[] has bytes in decimal format;
+            //Convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for (byte aByte : bytes) {
+                sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+            }
+            //Get complete hashed password in hex format
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
 
 
 
