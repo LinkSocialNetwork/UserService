@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api/userservice")
 public class AccountController {
 
@@ -33,7 +32,7 @@ public class AccountController {
      * @param user User object.
      * @return Custom response message (string).
      */
-    @PostMapping(value = "/insertNewUser")
+    @PostMapping(value = "/insertNewUser2")
     public void insertNewUser(@RequestBody User user)
     {
         User alreadyExists = userService.getUserByUserName(user.getUserName());
@@ -78,7 +77,7 @@ public class AccountController {
         if (newUser == null)
         {
             loggy.info("Login: can't find username! Received: " + user.getUserName());
-            return new User();
+            return null;
         }
         else
         {
@@ -107,7 +106,7 @@ public class AccountController {
             else
             {
                 loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
-                return new User();
+                return null;
             }
         }
     }
