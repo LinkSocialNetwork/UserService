@@ -1,12 +1,18 @@
 package com.link.service;
 
 import com.link.dao.UserDao;
+
 import com.link.model.User;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+
+
+import org.springframework.stereotype.Service;
+import com.link.model.User;
+
 import java.util.List;
 
 @Service("UserService")
@@ -26,6 +32,7 @@ public class UserServiceImpl implements UserService{
      */
     @Override
     public User logIn(User user) {
+
         User fromDB= userDao.findByUserName(user.getUserName());
         if(user.getPassword().equals(fromDB.getPassword())){
             return fromDB;
