@@ -1,0 +1,6 @@
+2021-04-26 11:53:17 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PLAYABLE_CHARACTERS" not found; SQL statement:
+INSERT INTO playable_characters (char_name, special_move) VALUES( 'Test File', 'Test Values') [42102-200]
+2021-04-26 11:55:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERACCOUNT" not found; SQL statement:
+INSERT INTO UserAccount (user_name, password) VALUES( 'Test File', 'Test Values') [42102-200]

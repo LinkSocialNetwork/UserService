@@ -1,17 +1,21 @@
 package com.link.model;
 
 
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name= "UserAccount")
 public class User {
@@ -30,9 +34,10 @@ public class User {
     private String lastName;
 
     @Column(name= "password", unique = false, nullable = false)
-    @JsonIgnore
     private String password;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     @Column(name= "dob", unique = false, nullable = false)
     private Date dob;
 
@@ -42,22 +47,29 @@ public class User {
     @Column(name= "bio", unique = false, nullable = true)
     private String bio;
 
-    @Column(name= "profile_img_url", unique = false, nullable = false)
+    @ColumnDefault(value = "'blahhhhh'")
+    @Column(name= "profile_img_url", unique = false)
     private String profileImg;
 
     @Column(name= "business_name", unique = false, nullable = true)
     private String businessName;
 
-    @Column(name= "date_created", unique = false, nullable = false)
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
+    @Column(name= "date_created", unique = false)
     private Date dateCreated;
 
+    @Column(name = "authToken", unique = true, nullable = true)
+    private String authToken;
+
     //follows
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
     private List<User> following;
 
     //may need to add a "people who are following me" column as well
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
     private List<User> myFollowers;
 }
