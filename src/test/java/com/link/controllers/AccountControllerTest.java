@@ -6,16 +6,25 @@ import com.link.util.PasswordAuthentication;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class AccountControllerTest {
 
-    private AccountController accountController;
+    @Autowired
+    private UserServiceImpl userService;
+
+    @Autowired
+    private JWTServiceImpl jwtService;
+
+    @Autowired
+    private PasswordAuthentication authorizer;
 
     @BeforeEach
     void setUp() {
-        accountController = new AccountController();
     }
 
     @AfterEach
