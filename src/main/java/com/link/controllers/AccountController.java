@@ -79,8 +79,9 @@ public class AccountController {
      */
     @PostMapping("/login")
 
-    public User login(@RequestBody User user)
+    public User login(@RequestBody User user) throws Exception
     {
+
         User newUser = userService.getUserByUserName(user.getUserName());
 
         if (newUser == null)
@@ -90,8 +91,9 @@ public class AccountController {
         }
 
         String entered = user.getPassword();
-        if(authorizer.authenticate(entered, newUser.getPassword())) {
-            return JwtEncryption.encrypt(user);
+        if(HashPassword.hashPassword(entered).equals(newUser.getPassword())) {
+            newUser.setAuthToken(JwtEncryption.encrypt(user));
+            return newUser;
         }
         else {
             loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
@@ -149,10 +151,5 @@ public class AccountController {
     @Autowired
     public AccountController(UserServiceImpl userService) {
         this.userService = userService;
-<<<<<<< HEAD
-=======
-        //this.jwtService = new JwtEncryption();
->>>>>>> b6041d3e57a7394eb075dec2f0af3c14a162f59c
-        this.authorizer = new PasswordAuthentication();
     }
 }
