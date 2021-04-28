@@ -3,6 +3,7 @@ package com.link.controllers;
 import com.link.model.User;
 import com.link.service.JWTServiceImpl;
 import com.link.service.UserServiceImpl;
+import com.link.util.JwtEncryption;
 import com.link.util.HashPassword;
 import com.link.util.PasswordAuthentication;
 import org.apache.log4j.Level;
@@ -22,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
 public class AccountController {
 
     private UserServiceImpl userService;
-    private JWTServiceImpl jwtService;
+    private JwtEncryption jwtService;
     private PasswordAuthentication authorizer;
 
     final static Logger loggy = Logger.getLogger(AccountController.class);
@@ -73,12 +74,11 @@ public class AccountController {
      *
      * Generates a new JWT if there's not a valid one already
      *
-     * @param session HTTP session
      * @param user User object of the current logged in user.
      * @return User object
      */
     @PostMapping("/login")
-    public User login(HttpSession session, @RequestBody User user)
+    public String login(@RequestBody User user) throws Exception
     {
         User newUser = userService.getUserByUserName(user.getUserName());
 
@@ -87,49 +87,16 @@ public class AccountController {
             loggy.info("Login: can't find username! Received: " + user.getUserName());
             return null;
         }
-        else
-        {
-            String entered = user.getPassword();
-            System.out.println("Entered1: " + entered);
-            entered = HashPassword.hashPassword(entered);
 
-            System.out.println("Entered2: " + entered);
-            System.out.println("User password: " + newUser.getPassword());
-
-            if(entered.equals(newUser.getPassword()))
-            {
-
-                // This will generate a token and add it to the user
-                if (newUser.getAuthToken() == null || !jwtService.checkToken(newUser.getAuthToken())) {
-
-                    newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
-                    userService.updateUser(newUser);
-
-                    System.out.println(jwtService.checkToken(newUser.getAuthToken()));
-                }
-
-                // If there's already a non-expired token, redirect to feed
-                if(jwtService.checkToken(newUser.getAuthToken()))
-                {
-                    System.out.println("getting new tokennNnNn");
-                    //User is logged in: redirect to feed
-                    return newUser;
-                }
-
-//                session.setAttribute("loggedInUser", newUser);
-//                User currentUser = (User) session.getAttribute("loggedInUser");
-
-                //TODO Redirect to frontend or set token here
-
-                return newUser;
-            }
-            else
-            {
-                loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
-                System.out.println("Login: can't authenticate password! Received: " + user.getUserName());
-                return null;
-            }
+        String entered = user.getPassword();
+        if(authorizer.authenticate(entered, newUser.getPassword())) {
+            return JwtEncryption.encrypt(user);
         }
+        else {
+            loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
+            return null;
+        }
+
     }
 
     /**
@@ -155,20 +122,20 @@ public class AccountController {
     /**
      * Get mapping to check if a user object's token is valid
      *
-     * @param user the User to check
+     * @param token the User to check
      * @return if there's a valid token
      */
     @GetMapping(value = "/checkToken")
-    public boolean checkToken(@RequestBody User user)
+    public User checkToken(@RequestHeader("token") String token) throws Exception
     {
-        if(user.getAuthToken() != null)
+        if(token == null)
         {
-            return jwtService.checkToken(user.getAuthToken());
+            //return jwtService.checkToken(user.getAuthToken());
+            return null;
         }
 
-        else {
-            return false;
-        }
+        return JwtEncryption.decrypt(token);
+
     }
 
 
@@ -179,9 +146,9 @@ public class AccountController {
     }
 
     @Autowired
-    public AccountController(UserServiceImpl userService, JWTServiceImpl jwtService) {
+    public AccountController(UserServiceImpl userService) {
         this.userService = userService;
-        this.jwtService = jwtService;
+        //this.jwtService = new JwtEncryption();
         this.authorizer = new PasswordAuthentication();
     }
 }
