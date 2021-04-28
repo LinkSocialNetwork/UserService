@@ -52,8 +52,8 @@ public class AccountController {
             user.setPassword(inputPass);
 
             //When a user is created it will ping the post service to create a user also
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+//            RestTemplate restTemplate = new RestTemplate();
+//            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
 
             userService.createUser(user);
 
@@ -73,12 +73,11 @@ public class AccountController {
      *
      * Generates a new JWT if there's not a valid one already
      *
-     * @param session HTTP session
      * @param user User object of the current logged in user.
      * @return User object
      */
     @PostMapping("/login")
-    public User login(HttpSession session, @RequestBody User user)
+    public User login(@RequestBody User user)
     {
         User newUser = userService.getUserByUserName(user.getUserName());
 
@@ -179,9 +178,8 @@ public class AccountController {
     }
 
     @Autowired
-    public AccountController(UserServiceImpl userService, JWTServiceImpl jwtService) {
+    public AccountController(UserServiceImpl userService) {
         this.userService = userService;
-        this.jwtService = jwtService;
         this.authorizer = new PasswordAuthentication();
     }
 }
