@@ -3,6 +3,7 @@ package com.link.controllers;
 import com.link.model.User;
 import com.link.service.JWTServiceImpl;
 import com.link.service.UserServiceImpl;
+import com.link.util.JwtEncryption;
 import com.link.util.HashPassword;
 import com.link.util.PasswordAuthentication;
 import org.apache.log4j.Level;
@@ -22,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
 public class AccountController {
 
     private UserServiceImpl userService;
-    private JWTServiceImpl jwtService;
+    private JwtEncryption jwtService;
     private PasswordAuthentication authorizer;
 
     final static Logger loggy = Logger.getLogger(AccountController.class);
@@ -77,6 +78,7 @@ public class AccountController {
      * @return User object
      */
     @PostMapping("/login")
+
     public User login(@RequestBody User user)
     {
         User newUser = userService.getUserByUserName(user.getUserName());
@@ -89,43 +91,12 @@ public class AccountController {
         else
         {
             String entered = user.getPassword();
-            System.out.println("Entered1: " + entered);
-            entered = HashPassword.hashPassword(entered);
-
-            System.out.println("Entered2: " + entered);
-            System.out.println("User password: " + newUser.getPassword());
-
-            if(entered.equals(newUser.getPassword()))
-            {
-
-                // This will generate a token and add it to the user
-                if (newUser.getAuthToken() == null || !jwtService.checkToken(newUser.getAuthToken())) {
-
-                    newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
-                    userService.updateUser(newUser);
-
-                    System.out.println(jwtService.checkToken(newUser.getAuthToken()));
-                }
-
-                // If there's already a non-expired token, redirect to feed
-                if(jwtService.checkToken(newUser.getAuthToken()))
-                {
-                    System.out.println("getting new tokennNnNn");
-                    //User is logged in: redirect to feed
-                    return newUser;
-                }
-
-//                session.setAttribute("loggedInUser", newUser);
-//                User currentUser = (User) session.getAttribute("loggedInUser");
-
-                //TODO Redirect to frontend or set token here
-
-                return newUser;
+            if(authorizer.authenticate(entered, newUser.getPassword())) {
+                return JwtEncryption.encrypt(user);
             }
             else
             {
                 loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
-                System.out.println("Login: can't authenticate password! Received: " + user.getUserName());
                 return null;
             }
         }
@@ -162,7 +133,7 @@ public class AccountController {
     {
         if(user.getAuthToken() != null)
         {
-            return jwtService.checkToken(user.getAuthToken());
+            //return jwtService.checkToken(user.getAuthToken());
         }
 
         else {
@@ -180,6 +151,10 @@ public class AccountController {
     @Autowired
     public AccountController(UserServiceImpl userService) {
         this.userService = userService;
+<<<<<<< HEAD
+=======
+        //this.jwtService = new JwtEncryption();
+>>>>>>> b6041d3e57a7394eb075dec2f0af3c14a162f59c
         this.authorizer = new PasswordAuthentication();
     }
 }
