@@ -3,6 +3,7 @@ package com.link.controllers;
 import com.link.model.User;
 import com.link.service.JWTServiceImpl;
 import com.link.service.UserServiceImpl;
+import com.link.util.HashPassword;
 import com.link.util.PasswordAuthentication;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,7 +46,7 @@ public class AccountController {
             // This will hash the password and set it to the user before sending it to the db
             String inputPass = user.getPassword();
             System.out.println("firstpassword:" + inputPass);
-            inputPass = hashPassword(inputPass);
+            inputPass = HashPassword.hashPassword(inputPass);
             System.out.println("secondpassword:" + inputPass);
             user.setPassword(inputPass);
 
@@ -85,7 +86,7 @@ public class AccountController {
         {
             String entered = user.getPassword();
             System.out.println("Entered1: " + entered);
-            entered = hashPassword(entered);
+            entered = HashPassword.hashPassword(entered);
 
             System.out.println("Entered2: " + entered);
             System.out.println("User password: " + newUser.getPassword());
@@ -165,31 +166,7 @@ public class AccountController {
         }
     }
 
-    public String hashPassword(String password) {
 
-        String generatedPassword = null;
-        try {
-            // Create MessageDigest instance for MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            //Add password bytes to digest
-            md.update(password.getBytes());
-            //Get the hash's bytes
-            byte[] bytes = md.digest();
-            //This bytes[] has bytes in decimal format;
-            //Convert it to hexadecimal format
-            StringBuilder sb = new StringBuilder();
-            for (byte aByte : bytes) {
-                sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
-            }
-            //Get complete hashed password in hex format
-            generatedPassword = sb.toString();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
-        return generatedPassword;
-    }
 
 
 
