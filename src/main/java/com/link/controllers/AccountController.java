@@ -88,18 +88,16 @@ public class AccountController {
             loggy.info("Login: can't find username! Received: " + user.getUserName());
             return null;
         }
-        else
-        {
-            String entered = user.getPassword();
-            if(authorizer.authenticate(entered, newUser.getPassword())) {
-                return JwtEncryption.encrypt(user);
-            }
-            else
-            {
-                loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
-                return null;
-            }
+
+        String entered = user.getPassword();
+        if(authorizer.authenticate(entered, newUser.getPassword())) {
+            return JwtEncryption.encrypt(user);
         }
+        else {
+            loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
+            return null;
+        }
+
     }
 
     /**
@@ -125,20 +123,20 @@ public class AccountController {
     /**
      * Get mapping to check if a user object's token is valid
      *
-     * @param user the User to check
+     * @param token the User to check
      * @return if there's a valid token
      */
     @GetMapping(value = "/checkToken")
-    public boolean checkToken(@RequestBody User user)
+    public User checkToken(@RequestHeader("token") String token) throws Exception
     {
-        if(user.getAuthToken() != null)
+        if(token == null)
         {
             //return jwtService.checkToken(user.getAuthToken());
+            return null;
         }
 
-        else {
-            return false;
-        }
+        return JwtEncryption.decrypt(token);
+
     }
 
 
