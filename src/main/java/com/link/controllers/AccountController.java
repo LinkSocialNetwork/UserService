@@ -3,6 +3,7 @@ package com.link.controllers;
 import com.link.model.User;
 import com.link.service.JWTServiceImpl;
 import com.link.service.UserServiceImpl;
+import com.link.util.HashPassword;
 import com.link.util.PasswordAuthentication;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -13,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/api/userservice")
@@ -40,12 +43,12 @@ public class AccountController {
 
         if(alreadyExists == null)
         {
-            // Set the user with a null token
-            user.setAuthToken(null);
 
             // This will hash the password and set it to the user before sending it to the db
             String inputPass = user.getPassword();
-            inputPass = authorizer.hash(inputPass);
+            System.out.println("firstpassword:" + inputPass);
+            inputPass = HashPassword.hashPassword(inputPass);
+            System.out.println("secondpassword:" + inputPass);
             user.setPassword(inputPass);
 
             //When a user is created it will ping the post service to create a user also
@@ -87,22 +90,34 @@ public class AccountController {
         else
         {
             String entered = user.getPassword();
+            System.out.println("Entered1: " + entered);
+            entered = HashPassword.hashPassword(entered);
 
-            if(authorizer.authenticate(entered, newUser.getPassword()))
+            System.out.println("Entered2: " + entered);
+            System.out.println("User password: " + newUser.getPassword());
+
+            if(entered.equals(newUser.getPassword()))
             {
+
+                // This will generate a token and add it to the user
+                if (newUser.getAuthToken() == null || !jwtService.checkToken(newUser.getAuthToken())) {
+
+                    newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
+                    userService.updateUser(newUser);
+
+                    System.out.println(jwtService.checkToken(newUser.getAuthToken()));
+                }
+
                 // If there's already a non-expired token, redirect to feed
                 if(jwtService.checkToken(newUser.getAuthToken()))
                 {
+                    System.out.println("getting new tokennNnNn");
                     //User is logged in: redirect to feed
                     return newUser;
                 }
 
-                // This will generate a token and add it to the user
-                newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
-                userService.updateUser(newUser);
-
-                session.setAttribute("loggedInUser", newUser);
-                User currentUser = (User) session.getAttribute("loggedInUser");
+//                session.setAttribute("loggedInUser", newUser);
+//                User currentUser = (User) session.getAttribute("loggedInUser");
 
                 //TODO Redirect to frontend or set token here
 
@@ -111,6 +126,7 @@ public class AccountController {
             else
             {
                 loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
+                System.out.println("Login: can't authenticate password! Received: " + user.getUserName());
                 return null;
             }
         }
@@ -150,7 +166,9 @@ public class AccountController {
             return jwtService.checkToken(user.getAuthToken());
         }
 
-        return false;
+        else {
+            return false;
+        }
     }
 
 
