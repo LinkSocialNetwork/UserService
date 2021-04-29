@@ -58,7 +58,7 @@ public class AccountController {
 
         String entered = user.getPassword();
         if(HashPassword.hashPassword(entered).equals(newUser.getPassword())) {
-            newUser.setAuthToken(JwtEncryption.encrypt(user));
+            newUser.setAuthToken(JwtEncryption.encrypt(newUser));
             return newUser;
         }
         else {
