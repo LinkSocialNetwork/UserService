@@ -68,7 +68,6 @@ public class JwtEncryption {
         user.setUserName(username);
         user.setFirstName(firstname);
         user.setLastName(lastname);
-
         return user;
     }
 

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -57,7 +58,7 @@ public class AccountController {
 
         String entered = user.getPassword();
         if(HashPassword.hashPassword(entered).equals(newUser.getPassword())) {
-            newUser.setAuthToken(JwtEncryption.encrypt(user));
+            newUser.setAuthToken(JwtEncryption.encrypt(newUser));
             return newUser;
         }
         else {
@@ -69,23 +70,24 @@ public class AccountController {
 
     /**
      * Api endpoint that logs out the user from the application. Redirects to landing page.
-     * @param myReq HTTP servlet request
+     * @param user User Object that represents who needs to be logged out
      */
-    //TODO: We need to parse a User @RequestBody and have the front end send the user object
-    @GetMapping(value = "/logout")
-    public void logout(HttpServletRequest myReq)
-    {
-        HttpSession userSession = myReq.getSession();
-
-        // This will set the current JWT auth token to null and update the db
-        // TODO the session's won't work, so we need to get the user by their authtoken or username
-        User currentUser = (User) userSession.getAttribute("loggedInUser");
-        currentUser.setAuthToken(null);
-        userService.updateUser(currentUser);
-
-        loggy.info("The successful logout of the session:"+userSession);
-        userSession.invalidate();
-    }
+//    TODO: We need to parse a User @RequestBody and have the front end send the user object
+//    public void logout(User user) throws UnsupportedEncodingException {
+//
+//
+//        User currentUser = userService.getUserByUserName(user.getUserName());
+//        // This will set the current JWT auth token to null and update the db
+//        // TODO the session's won't work, so we need to get the user by their authtoken or username
+//        String authToken = currentUser.getAuthToken();
+//        System.out.println(authToken);
+//        User tokenUser = JwtEncryption.decrypt(authToken);
+//        System.out.println(tokenUser);
+//
+//        //user.setAuthToken(null);
+//        //userService.updateUser(user);
+//
+//    }
 
     /**
      * Get mapping to check if a user object's token is valid
