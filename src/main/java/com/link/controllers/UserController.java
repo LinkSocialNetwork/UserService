@@ -4,6 +4,7 @@ package com.link.controllers;
 import com.link.model.User;
 import com.link.service.UserService;
 import com.link.service.UserServiceImpl;
+import com.link.util.HashPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
@@ -24,7 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 public class UserController {
 
     private JavaMailSender mailSender;
-//    UserController userController;
+    //    UserController userController;
     private UserService userService;
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {
@@ -32,7 +34,10 @@ public class UserController {
         //loggy.setLevel(Level.ERROR);
     }
 
-    //----------------------------------------------------------------------------------------------//
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+//----------------------------------------------------------------------------------------------//
 
     /**
      * Api endpoint that inserts User object into the application depending on whether they exists or not.
@@ -41,16 +46,30 @@ public class UserController {
      */
     @PostMapping(value = "/user")
     public void insertNewUser(@RequestBody User user){
-        /*User alreadyExists = userService.getUserByUserName(user.getUserName());
-        if(alreadyExists == null) {
+        User alreadyExists = userService.getUserByUserName(user.getUserName());
+
+        if(alreadyExists == null)
+        {
+
+            // This will hash the password and set it to the user before sending it to the db
+            String inputPass = user.getPassword();
+            System.out.println("firstpassword:" + inputPass);
+            inputPass = HashPassword.hashPassword(inputPass);
+            System.out.println("secondpassword:" + inputPass);
+            user.setPassword(inputPass);
+
+           /* RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+            */
             userService.createUser(user);
+
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
+
+            //TODO Redirect to login/frontend
         }
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
-        }*/
-        System.out.println(user);
-        userService.createUser(user);
+        }
     }
 
     //----------------------------------------------------------------------------------------------//
@@ -108,6 +127,11 @@ public class UserController {
             //TODO: need to update the update user vs update password
             if(!current.getPassword().equals(user.getPassword())){
                 loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
+
+                //When a user is created it will ping the post service to create a user also
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.postForEntity("http://localhost:9080/api/postservice/updateUser",user, User.class);
+
                 userService.updateUser(user);
             }
             else {
@@ -129,12 +153,17 @@ public class UserController {
     /**
      * Api endpoint that will remove a User from the application. Returns message when the user
      * is deleted through the HTTP response body.
-     * @param user User object.
+     * @param userId User object.
      * @return Custom response message (string).
      */
     // Christian Kent -- working in postman but must be given ID(in postman)!
     @DeleteMapping(value = "/user/{userId}")
     public void deleteUser(@PathVariable("userId") int userId){
+
+        //When a user is created it will ping the post service to create a user also
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForEntity("http://localhost:9080/api/postservice/deleteUser",userId, Integer.class);
+
         userService.deleteUser(userId);
         loggy.info("The deletion of a user with user id: "+ userId +".");
     }
@@ -175,10 +204,7 @@ public class UserController {
 
     //upload profile image (might be in update user)
 
-
     //----------------------------------------------------------------------------------------------//
-
-
 
     /**
      * Sends an pre written email to to the email address of the user specified in the param
