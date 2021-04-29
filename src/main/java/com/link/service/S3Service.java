@@ -26,10 +26,8 @@ import java.io.InputStream;
 public class S3Service {
 
 
-//    private String awsID = System.getenv("AWS_ID");
-    private String awsID = "AKIARAOMY7TYKK5TX6E5";
-//    private String awsKey = System.getenv("AWS_KEY");
-    private String awsKey = "Q5on35j9ymW92sUMiz+9+3l+FzQ68UYs4ox1l7hh";
+    private String awsID = System.getenv("AWS_ID");
+    private String awsKey = System.getenv("AWS_KEY");
 
     private String region = "us-east-2";
     private String bucketName = "linksocialnetworkbucket";
