@@ -33,41 +33,6 @@ public class AccountController {
     }
 
     /**
-     * Api endpoint that inserts User object into the application depending on whether they exist or not.
-     * @param user User object.
-     * @return Custom response message (string).
-     */
-    @PostMapping(value = "/insertNewUser2")
-    public void insertNewUser(@RequestBody User user)
-    {
-        User alreadyExists = userService.getUserByUserName(user.getUserName());
-
-        if(alreadyExists == null)
-        {
-
-            // This will hash the password and set it to the user before sending it to the db
-            String inputPass = user.getPassword();
-            System.out.println("firstpassword:" + inputPass);
-            inputPass = HashPassword.hashPassword(inputPass);
-            System.out.println("secondpassword:" + inputPass);
-            user.setPassword(inputPass);
-
-            //When a user is created it will ping the post service to create a user also
-//            RestTemplate restTemplate = new RestTemplate();
-//            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
-
-            userService.createUser(user);
-
-            loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
-
-            //TODO Redirect to login/frontend
-        }
-        else {
-            loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
-        }
-    }
-
-    /**
      * Api endpoint for the main landing page of application that allows user to login.
      *
      * Uses PasswordAuthentication to check if the entered password matches the hashed password in the db
