@@ -117,6 +117,11 @@ public class UserController {
             //TODO: need to update the update user vs update password
             if(!current.getPassword().equals(user.getPassword())){
                 loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
+
+                //When a user is created it will ping the post service to create a user also
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.postForEntity("http://localhost:9080/api/postservice/updateUser",user, User.class);
+
                 userService.updateUser(user);
             }
             else {
@@ -144,6 +149,11 @@ public class UserController {
     // Christian Kent -- working in postman but must be given ID(in postman)!
     @DeleteMapping(value = "/user/{userId}")
     public void deleteUser(@PathVariable("userId") int userId){
+
+        //When a user is created it will ping the post service to create a user also
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForEntity("http://localhost:9080/api/postservice/deleteUser",userId, Integer.class);
+
         userService.deleteUser(userId);
         loggy.info("The deletion of a user with user id: "+ userId +".");
     }
@@ -184,10 +194,7 @@ public class UserController {
 
     //upload profile image (might be in update user)
 
-
     //----------------------------------------------------------------------------------------------//
-
-
 
     /**
      * Sends an pre written email to to the email address of the user specified in the param

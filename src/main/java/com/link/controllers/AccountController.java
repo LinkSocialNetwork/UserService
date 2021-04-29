@@ -3,6 +3,8 @@ package com.link.controllers;
 import com.link.model.User;
 import com.link.service.JWTServiceImpl;
 import com.link.service.UserServiceImpl;
+import com.link.util.JwtEncryption;
+import com.link.util.HashPassword;
 import com.link.util.PasswordAuthentication;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -13,13 +15,15 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/api/userservice")
 public class AccountController {
 
     private UserServiceImpl userService;
-    private JWTServiceImpl jwtService;
+    private JwtEncryption jwtService;
     private PasswordAuthentication authorizer;
 
     final static Logger loggy = Logger.getLogger(AccountController.class);
@@ -40,17 +44,17 @@ public class AccountController {
 
         if(alreadyExists == null)
         {
-            // Set the user with a null token
-            user.setAuthToken(null);
 
             // This will hash the password and set it to the user before sending it to the db
             String inputPass = user.getPassword();
-            inputPass = authorizer.hash(inputPass);
+            System.out.println("firstpassword:" + inputPass);
+            inputPass = HashPassword.hashPassword(inputPass);
+            System.out.println("secondpassword:" + inputPass);
             user.setPassword(inputPass);
 
             //When a user is created it will ping the post service to create a user also
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+//            RestTemplate restTemplate = new RestTemplate();
+//            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
 
             userService.createUser(user);
 
@@ -70,13 +74,14 @@ public class AccountController {
      *
      * Generates a new JWT if there's not a valid one already
      *
-     * @param session HTTP session
      * @param user User object of the current logged in user.
      * @return User object
      */
     @PostMapping("/login")
-    public User login(HttpSession session, @RequestBody User user)
+
+    public User login(@RequestBody User user) throws Exception
     {
+
         User newUser = userService.getUserByUserName(user.getUserName());
 
         if (newUser == null)
@@ -84,36 +89,17 @@ public class AccountController {
             loggy.info("Login: can't find username! Received: " + user.getUserName());
             return null;
         }
-        else
-        {
-            String entered = user.getPassword();
 
-            if(authorizer.authenticate(entered, newUser.getPassword()))
-            {
-                // If there's already a non-expired token, redirect to feed
-                if(jwtService.checkToken(newUser.getAuthToken()))
-                {
-                    //User is logged in: redirect to feed
-                    return newUser;
-                }
-
-                // This will generate a token and add it to the user
-                newUser.setAuthToken(jwtService.generateToken(newUser.getUserName()));
-                userService.updateUser(newUser);
-
-                session.setAttribute("loggedInUser", newUser);
-                User currentUser = (User) session.getAttribute("loggedInUser");
-
-                //TODO Redirect to frontend or set token here
-
-                return newUser;
-            }
-            else
-            {
-                loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
-                return null;
-            }
+        String entered = user.getPassword();
+        if(HashPassword.hashPassword(entered).equals(newUser.getPassword())) {
+            newUser.setAuthToken(JwtEncryption.encrypt(user));
+            return newUser;
         }
+        else {
+            loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
+            return null;
+        }
+
     }
 
     /**
@@ -139,18 +125,20 @@ public class AccountController {
     /**
      * Get mapping to check if a user object's token is valid
      *
-     * @param user the User to check
+     * @param token the User to check
      * @return if there's a valid token
      */
     @GetMapping(value = "/checkToken")
-    public boolean checkToken(@RequestBody User user)
+    public User checkToken(@RequestHeader("token") String token) throws Exception
     {
-        if(user.getAuthToken() != null)
+        if(token == null)
         {
-            return jwtService.checkToken(user.getAuthToken());
+            //return jwtService.checkToken(user.getAuthToken());
+            return null;
         }
 
-        return false;
+        return JwtEncryption.decrypt(token);
+
     }
 
 
@@ -161,9 +149,7 @@ public class AccountController {
     }
 
     @Autowired
-    public AccountController(UserServiceImpl userService, JWTServiceImpl jwtService) {
+    public AccountController(UserServiceImpl userService) {
         this.userService = userService;
-        this.jwtService = jwtService;
-        this.authorizer = new PasswordAuthentication();
     }
 }

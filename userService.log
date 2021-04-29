@@ -10,3 +10,4 @@
 2021-04-24 21:38:28 INFO  UserController:196 - The deletion of a user with username: yaboichristian.
 2021-04-24 21:39:11 INFO  UserController:196 - The deletion of a user with username: yaboiTrev.
 2021-04-24 21:39:47 INFO  UserController:196 - The deletion of a user with username: yaboiTrev.
+2021-04-27 19:12:27 INFO  AccountController:55 - The successful creation of a user with username: me.
