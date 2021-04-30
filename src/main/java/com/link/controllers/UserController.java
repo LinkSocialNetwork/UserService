@@ -1,6 +1,7 @@
 package com.link.controllers;
 
 
+import com.link.model.CustomResponseMessage;
 import com.link.model.User;
 import com.link.service.UserService;
 import com.link.service.UserServiceImpl;
@@ -45,7 +46,7 @@ public class UserController {
      * @return Custom response message (string).
      */
     @PostMapping(value = "/user")
-    public void insertNewUser(@RequestBody User user){
+    public CustomResponseMessage insertNewUser(@RequestBody User user){
         User alreadyExists = userService.getUserByUserName(user.getUserName());
 
         if(alreadyExists == null)
@@ -66,9 +67,11 @@ public class UserController {
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
 
             //TODO Redirect to login/frontend
+            return new CustomResponseMessage("User was created");
         }
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
+            return new CustomResponseMessage("userName already taken");
         }
     }
 
