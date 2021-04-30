@@ -33,6 +33,7 @@ public class JwtEncryption {
                 .claim("username", user.getUserName())
                 .claim("firstname", user.getFirstName())
                 .claim("lastname", user.getLastName())
+                .claim("userID", user.getUserID())
                 //sign with environment variable
                 .signWith(
                         SignatureAlgorithm.HS256,
@@ -62,12 +63,14 @@ public class JwtEncryption {
         String username = (String) claims.getBody().get("username");
         String firstname = (String) claims.getBody().get("firstname");
         String lastname = (String) claims.getBody().get("lastname");
+        int userID = (int) claims.getBody().get("userID");
 
         User user = new User();
         //can add or remove fields as needed
         user.setUserName(username);
         user.setFirstName(firstname);
         user.setLastName(lastname);
+        user.setUserID(userID);
         return user;
     }
 
