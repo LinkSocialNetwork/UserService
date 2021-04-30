@@ -121,24 +121,25 @@ public class UserController {
      */
     //TODO: might change the session into auth token
     @PutMapping(value = "/user")
-    public void updateUser(@RequestBody User user){
+    public void updateUser(@RequestHeader("token") String token, @RequestBody User user){
         try{
             // Get the current user from the given token
-            User current = JwtEncryption.decrypt(user.getAuthToken());
+            // This will throw an error if the token is bad
+            JwtEncryption.decrypt(token);
 
-            if(!current.getPassword().equals(user.getPassword())){
-                loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
+            loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
 
-                //When a user is created it will ping the post service to create a user also
+            //When a user is created it will ping the post service to create a user also
+            try {
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.postForEntity("http://localhost:9080/api/postservice/updateUser",user, User.class);
+            }
+            catch (Exception e)
+            {
+                loggy.error("Post service not reached", e);
+            }
 
-                userService.updateUser(user);
-            }
-            else {
-                loggy.info("The successful update of a user with username: "+user.getUserName()+".");
-                userService.updateUser(user);
-            }
+            userService.updateUser(user);
 
         } catch(Exception e)
         {
@@ -263,6 +264,7 @@ public class UserController {
     /**
      * Method called when a user is attempting to update their password from their profile
      * Checks if the given password is the current user's password
+     * @author Brandon, Devin, Loutfi, Joe
      *
      * @param user the current user
      * @return true if good, false if not
@@ -270,10 +272,19 @@ public class UserController {
     @PostMapping(value="/validate-password")
     public boolean validateOldPassword(@RequestBody User user)
     {
-        return false;
+        // We take the incoming password and check if it's the right one
+        // First we hash it
+        String incomingPassword = user.getPassword();
+        incomingPassword = HashPassword.hashPassword(incomingPassword);
+
+        // Then we get the current user from the db
+        User current = userService.getUserByUserName(user.getUserName());
+
+        // Return if the hashed passwords match or not
+        return current.getPassword().equals(incomingPassword);
     }
 
-
+    //----------------------------------------------------------------------------------------------//
 
     public UserController() {
     }

@@ -31,8 +31,7 @@ public class JwtEncryption {
                 .setExpiration(Date.from(ZonedDateTime.now().plusDays(7).toInstant()))
                 //we can add or remove fields as needed
                 .claim("username", user.getUserName())
-                .claim("firstname", user.getFirstName())
-                .claim("lastname", user.getLastName())
+                .claim("email", user.getEmail())
                 .claim("userID", user.getUserID())
                 //sign with environment variable
                 .signWith(
@@ -61,15 +60,13 @@ public class JwtEncryption {
                 .parseClaimsJws(token);
         //convert all claims to Strings to put into user
         String username = (String) claims.getBody().get("username");
-        String firstname = (String) claims.getBody().get("firstname");
-        String lastname = (String) claims.getBody().get("lastname");
+        String email = (String) claims.getBody().get("email");
         int userID = (int) claims.getBody().get("userID");
 
         User user = new User();
         //can add or remove fields as needed
         user.setUserName(username);
-        user.setFirstName(firstname);
-        user.setLastName(lastname);
+        user.setEmail(email);
         user.setUserID(userID);
         return user;
     }
