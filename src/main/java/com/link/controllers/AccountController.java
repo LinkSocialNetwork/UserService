@@ -103,8 +103,9 @@ public class AccountController {
             //return jwtService.checkToken(user.getAuthToken());
             return null;
         }
-
-        return JwtEncryption.decrypt(token);
+        User user = userService.getUserByID(JwtEncryption.decrypt(token).getUserID());
+        System.out.println("this is user " + user);
+        return user;
 
     }
 

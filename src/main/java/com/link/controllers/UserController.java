@@ -6,6 +6,7 @@ import com.link.model.User;
 import com.link.service.UserService;
 import com.link.service.UserServiceImpl;
 import com.link.util.HashPassword;
+import com.link.util.JwtEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -115,40 +116,36 @@ public class UserController {
      * Api endpoint that updates the User in the application. Receives updated User object
      * and passes the information to the service layer. Returns message when the user is updated
      * in the application via response body.
-     * @param session HTTP Session of current logged in user.
      * @param user User object.
      * @return Custom response message (string)
      */
     //TODO: might change the session into auth token
     @PutMapping(value = "/user")
-    public void updateUser(HttpSession session,@RequestBody User user){
-        if(session.getAttribute("loggedInUser")!=null){
+    public void updateUser(@RequestHeader("token") String token, @RequestBody User user){
+        try{
+            // Get the current user from the given token
+            // This will throw an error if the token is bad
+            JwtEncryption.decrypt(token);
 
-            //TODO: need to update with auth tokens
-            User current=((User)session.getAttribute("loggedInUser"));
+            loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
 
-            //TODO: need to update the update user vs update password
-            if(!current.getPassword().equals(user.getPassword())){
-                loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
-
-                //When a user is created it will ping the post service to create a user also
+            //When a user is created it will ping the post service to create a user also
+            try {
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.postForEntity("http://localhost:9080/api/postservice/updateUser",user, User.class);
-
-                userService.updateUser(user);
             }
-            else {
-                loggy.info("The successful update of a user with username: "+user.getUserName()+".");
-                userService.updateUser(user);
+            catch (Exception e)
+            {
+                loggy.error("Post service not reached", e);
             }
 
-            User updatedVersion=userService.getUserByID(current.getUserID());
-            session.setAttribute("loggedInUser",updatedVersion);
-        }
-        else{
-            loggy.info("The failed update of a user with username: "+user.getUserName()+".");
-        }
+            userService.updateUser(user);
 
+        } catch(Exception e)
+        {
+            e.printStackTrace();
+            return;
+        }
     }
 
     //----------------------------------------------------------------------------------------------//
@@ -264,7 +261,30 @@ public class UserController {
 
     //----------------------------------------------------------------------------------------------//
 
+    /**
+     * Method called when a user is attempting to update their password from their profile
+     * Checks if the given password is the current user's password
+     * @author Brandon, Devin, Loutfi, Joe
+     *
+     * @param user the current user
+     * @return true if good, false if not
+     */
+    @PostMapping(value="/validate-password")
+    public boolean validateOldPassword(@RequestBody User user)
+    {
+        // We take the incoming password and check if it's the right one
+        // First we hash it
+        String incomingPassword = user.getPassword();
+        incomingPassword = HashPassword.hashPassword(incomingPassword);
 
+        // Then we get the current user from the db
+        User current = userService.getUserByUserName(user.getUserName());
+
+        // Return if the hashed passwords match or not
+        return current.getPassword().equals(incomingPassword);
+    }
+
+    //----------------------------------------------------------------------------------------------//
 
     public UserController() {
     }
