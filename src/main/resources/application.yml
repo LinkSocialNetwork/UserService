@@ -17,12 +17,15 @@ spring:
           starttls:
             enable: true
   datasource:
-    url: jdbc:postgresql://${LINK_DB_URI}/linkusers
-    username: ${LINK_DB_USERNAME}
-    password: ${LINK_DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:file:./UserService/myh2database/myh2file
+    password: sa
+    username: mypass
+    driverClassName: org.h2.Driver
+    data: classpath:./userdata.sql
+    initialize: true
+    initialization-mode: always
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
     hibernate:
       ddl-auto: create

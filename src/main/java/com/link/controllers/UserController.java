@@ -1,9 +1,12 @@
 package com.link.controllers;
 
 
+import com.link.model.CustomResponseMessage;
 import com.link.model.User;
 import com.link.service.UserService;
 import com.link.service.UserServiceImpl;
+import com.link.util.HashPassword;
+import com.link.util.JwtEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,21 +47,33 @@ public class UserController {
      * @return Custom response message (string).
      */
     @PostMapping(value = "/user")
-    public void insertNewUser(@RequestBody User user){
-        /*User alreadyExists = userService.getUserByUserName(user.getUserName());
-        if(alreadyExists == null) {
+    public CustomResponseMessage insertNewUser(@RequestBody User user){
+        User alreadyExists = userService.getUserByUserName(user.getUserName());
+
+        if(alreadyExists == null)
+        {
+
+            // This will hash the password and set it to the user before sending it to the db
+            String inputPass = user.getPassword();
+            System.out.println("firstpassword:" + inputPass);
+            inputPass = HashPassword.hashPassword(inputPass);
+            System.out.println("secondpassword:" + inputPass);
+            user.setPassword(inputPass);
+
+           /* RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+            */
             userService.createUser(user);
+
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
+
+            //TODO Redirect to login/frontend
+            return new CustomResponseMessage("User was created");
         }
         else {
             loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
-        }*/
-
-        //When a user is created it will ping the post service to create a user also
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
-
-        userService.createUser(user);
+            return new CustomResponseMessage("userName already taken");
+        }
     }
 
     //----------------------------------------------------------------------------------------------//
@@ -101,19 +116,16 @@ public class UserController {
      * Api endpoint that updates the User in the application. Receives updated User object
      * and passes the information to the service layer. Returns message when the user is updated
      * in the application via response body.
-     * @param session HTTP Session of current logged in user.
      * @param user User object.
      * @return Custom response message (string)
      */
     //TODO: might change the session into auth token
     @PutMapping(value = "/user")
-    public void updateUser(HttpSession session,@RequestBody User user){
-        if(session.getAttribute("loggedInUser")!=null){
+    public void updateUser(@RequestBody User user){
+        try{
+            // Get the current user from the given token
+            User current = JwtEncryption.decrypt(user.getAuthToken());
 
-            //TODO: need to update with auth tokens
-            User current=((User)session.getAttribute("loggedInUser"));
-
-            //TODO: need to update the update user vs update password
             if(!current.getPassword().equals(user.getPassword())){
                 loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
 
@@ -128,13 +140,11 @@ public class UserController {
                 userService.updateUser(user);
             }
 
-            User updatedVersion=userService.getUserByID(current.getUserID());
-            session.setAttribute("loggedInUser",updatedVersion);
+        } catch(Exception e)
+        {
+            e.printStackTrace();
+            return;
         }
-        else{
-            loggy.info("The failed update of a user with username: "+user.getUserName()+".");
-        }
-
     }
 
     //----------------------------------------------------------------------------------------------//
@@ -249,6 +259,19 @@ public class UserController {
     }
 
     //----------------------------------------------------------------------------------------------//
+
+    /**
+     * Method called when a user is attempting to update their password from their profile
+     * Checks if the given password is the current user's password
+     *
+     * @param user the current user
+     * @return true if good, false if not
+     */
+    @PostMapping(value="/validate-password")
+    public boolean validateOldPassword(@RequestBody User user)
+    {
+        return false;
+    }
 
 
 
