@@ -77,8 +77,10 @@ class FollowControllerTest {
 
     @Test
     void deleteFollow() {
+        int userId1 = 1;
+        int userId2 = 2;
         Follow follow = new Follow();
-        followController.deleteFollow(follow);
-        Mockito.verify(followService).deleteFollow(follow);
+        followController.deleteFollow(userId1,userId2);
+        Mockito.verify(followService).deleteFollowByUserID(userId1,userId2);
     }
 }

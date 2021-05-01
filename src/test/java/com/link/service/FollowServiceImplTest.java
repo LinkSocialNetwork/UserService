@@ -51,15 +51,15 @@ class FollowServiceImplTest {
     }
 
     @Test
-    void deleteFollow() {
+    void deleteAllByFollowerUserIDAndFolloweeUserID() {
         User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken");
         User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchilds20202@email.com","some bio2","/profile2","abusines2sname",new Date(), "authToken");
 
         Follow follow = new Follow(1, user1, user2);
 
-        followService.deleteFollow(follow);
+        followService.deleteFollowByUserID(user1.getUserID(),user2.getUserID());
 
-        Mockito.verify(followDao).delete(follow);
+        Mockito.verify(followDao).deleteAllByFollowerUserIDAndFolloweeUserID(user1.getUserID(),user2.getUserID());
     }
 
     @Test

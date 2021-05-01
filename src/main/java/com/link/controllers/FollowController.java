@@ -50,12 +50,9 @@ public class FollowController {
         followService.insertFollow(follow);
     }
 
-    /**
-     * delete a follow
-     * @param follow the pair to be deleted
-     */
-    @DeleteMapping("/follow")
-    public void deleteFollow (@RequestBody Follow follow) {
-        followService.deleteFollow(follow);
+
+    @DeleteMapping("/follow/{followerID}/{followeeID}")
+    public void deleteFollow (@PathVariable int followerID, @PathVariable int followeeID) {
+        followService.deleteFollowByUserID(followerID, followeeID);
     }
 }

@@ -30,15 +30,6 @@ public class FollowServiceImpl implements FollowService{
     }
 
     /**
-     * unfollow people
-     * @param follow the targeted follow entry to delete
-     */
-    @Override
-    public void deleteFollow(Follow follow) {
-        followDao.delete(follow);
-    }
-
-    /**
      * get all the followees as users, will find Followers and get Followees from the list
      * @param userID the user's ID
      * @return Converts a follow list to a user list
@@ -51,6 +42,11 @@ public class FollowServiceImpl implements FollowService{
             userList.add(f.getFollowee());
         }
         return userList;
+    }
+
+    @Override
+    public void deleteFollowByUserID(int followerID, int followeeID) {
+        followDao.deleteAllByFollowerUserIDAndFolloweeUserID(followerID, followeeID);
     }
 
     /**

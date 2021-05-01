@@ -86,4 +86,36 @@ class FollowDaoTest {
 
         assertEquals(expectedUsers,actualUsers);
     }
+
+    @Test
+    void deleteAllByFollowerUserIDAndFolloweeUserID() {
+        User user1 = userDao.findById(1);
+        User user2 = userDao.findById(2);
+        User user3 = userDao.findById(3);
+        User user4 = userDao.findById(4);
+        User user5 = userDao.findById(5);
+
+        Follow follow1 = new Follow(1, user1, user2);
+        Follow follow2 = new Follow(2, user1, user3);
+        Follow follow3 = new Follow(3, user1, user4);
+        Follow follow4 = new Follow(4, user1, user5);
+
+        followDao.save(follow1);
+        followDao.save(follow2);
+        followDao.save(follow3);
+        followDao.save(follow4);
+
+        List<Follow> expectedUsers = new ArrayList<>();
+        expectedUsers.add(follow1);
+//        expectedUsers.add(follow2);
+        expectedUsers.add(follow3);
+        expectedUsers.add(follow4);
+
+        followDao.deleteAllByFollowerUserIDAndFolloweeUserID(1,3);
+
+        List<Follow> actualUsers = followDao.findByFollowerUserID(1);
+
+        assertEquals(expectedUsers, actualUsers);
+    }
+
 }
