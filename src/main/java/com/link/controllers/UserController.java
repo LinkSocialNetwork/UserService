@@ -60,9 +60,8 @@ public class UserController {
             System.out.println("secondpassword:" + inputPass);
             user.setPassword(inputPass);
 
-           /* RestTemplate restTemplate = new RestTemplate();
+            RestTemplate restTemplate = new RestTemplate();
             restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
-            */
             userService.createUser(user);
 
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
