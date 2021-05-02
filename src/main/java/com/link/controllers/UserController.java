@@ -62,6 +62,7 @@ public class UserController {
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+
             userService.createUser(user);
 
             loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
@@ -74,19 +75,6 @@ public class UserController {
             return new CustomResponseMessage("userName already taken");
         }
     }
-
-    //----------------------------------------------------------------------------------------------//
-
-//    /**
-//     * Api endpoint that receives User object to use username to retreive User object from service layer.
-//     * @param user User object from HTTP request.
-//     * @return User object based on the username.
-//     */
-//    @PostMapping(value = "/getByUsername")
-//    public User getUserByUsername(@RequestBody User user) {
-//        loggy.info("An attempt to retrieve a user with username: "+user.getUserName()+".");
-//        return userService.getUserByUserName(user.getUserName());
-//    }
 
     /**
      * Api endpoint that returns an Array list of User objects from the service layer.
@@ -131,7 +119,7 @@ public class UserController {
             //When a user is created it will ping the post service to create a user also
             try {
                 RestTemplate restTemplate = new RestTemplate();
-                restTemplate.postForEntity("http://localhost:9080/api/postservice/updateUser",user, User.class);
+                restTemplate.put("http://localhost:9080/api/postservice/updateUser",user, User.class);
             }
             catch (Exception e)
             {
@@ -280,6 +268,61 @@ public class UserController {
 
         // Return if the hashed passwords match or not
         return current.getPassword().equals(incomingPassword);
+    }
+
+    /**
+     * Api endpoint for the main landing page of application that allows user to login.
+     *
+     * Uses PasswordAuthentication to check if the entered password matches the hashed password in the db
+     *
+     * Generates a new JWT if there's not a valid one already
+     *
+     * @param user User object of the current logged in user.
+     * @return User object
+     */
+    @PostMapping("/login")
+
+    public User login(@RequestBody User user) throws Exception
+    {
+
+        User newUser = userService.getUserByUserName(user.getUserName());
+
+        if (newUser == null)
+        {
+            loggy.info("Login: can't find username! Received: " + user.getUserName());
+            return null;
+        }
+
+        String entered = user.getPassword();
+        if(HashPassword.hashPassword(entered).equals(newUser.getPassword())) {
+            newUser.setAuthToken(JwtEncryption.encrypt(newUser));
+            return newUser;
+        }
+        else {
+            loggy.info("Login: can't authenticate password! Received: " + user.getUserName());
+            return null;
+        }
+
+    }
+
+    /**
+     * Get mapping to check if a user object's token is valid
+     *
+     * @param token the User to check
+     * @return if there's a valid token
+     */
+    @GetMapping(value = "/checkToken")
+    public User checkToken(@RequestHeader("token") String token) throws Exception
+    {
+        if(token == null)
+        {
+            //return jwtService.checkToken(user.getAuthToken());
+            return null;
+        }
+        User user = userService.getUserByID(JwtEncryption.decrypt(token).getUserID());
+        System.out.println("this is user " + user);
+        return user;
+
     }
 
     //----------------------------------------------------------------------------------------------//
