@@ -8,6 +8,7 @@ import com.link.service.UserServiceImpl;
 import com.link.util.HashPassword;
 import com.link.util.JwtEncryption;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -60,12 +61,21 @@ public class UserController {
             System.out.println("secondpassword:" + inputPass);
             user.setPassword(inputPass);
 
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
+            //if rest template was unsuccessful in creating a user in db, then return "Could not create user"
+            try {
+                RestTemplate restTemplate = new RestTemplate();
+                User postServiceUser = restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser", user, User.class).getBody();
 
-            userService.createUser(user);
+                System.out.println(postServiceUser);
+                //make sure ids are the same
+                user.setUserID(postServiceUser.getUserID());
+                userService.createUser(user);
 
-            loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
+                loggy.info("The successful creation of a user with username: " + user.getUserName() + ".");
+            }catch(Exception e){
+                e.printStackTrace();
+                return new CustomResponseMessage("Could not create user");
+            }
 
             //TODO Redirect to login/frontend
             return new CustomResponseMessage("User was created");
@@ -110,21 +120,10 @@ public class UserController {
     @PutMapping(value = "/user")
     public void updateUser(@RequestHeader("token") String token, @RequestBody User user){
         try{
-            // Get the current user from the given token
-            // This will throw an error if the token is bad
             JwtEncryption.decrypt(token);
 
-            loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
-
-            //When a user is created it will ping the post service to create a user also
-            try {
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.put("http://localhost:9080/api/postservice/updateUser",user, User.class);
-            }
-            catch (Exception e)
-            {
-                loggy.error("Post service not reached", e);
-            }
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.put("http://localhost:9080/api/postservice/updateUser",user, User.class);
 
             userService.updateUser(user);
 
