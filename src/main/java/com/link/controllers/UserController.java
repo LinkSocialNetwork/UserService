@@ -7,6 +7,7 @@ import com.link.service.UserService;
 import com.link.service.UserServiceImpl;
 import com.link.util.HashPassword;
 import com.link.util.JwtEncryption;
+import org.apache.catalina.webresources.JarWarResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -118,18 +119,46 @@ public class UserController {
      */
     //TODO: might change the session into auth token
     @PutMapping(value = "/user")
-    public void updateUser(@RequestHeader("token") String token, @RequestBody User user){
+    public boolean updateUser(@RequestHeader("token") String token, @RequestBody User user){
+        //get user object
+        User userFromDb = userService.getUserByID(user.getUserID());
         try{
             JwtEncryption.decrypt(token);
+
+            //check if username has been changed
+            if(!userFromDb.getUserName().equals(user.getUserName())){
+                //check if new username is already taken
+                User taken = userService.getUserByUserName(user.getUserName());
+
+                if(taken != null)
+                    return false;
+            }
+
+            //check if email has been changed
+            if(!userFromDb.getEmail().equals(user.getEmail())){
+                //check if new email is already taken
+                User taken = userService.getUserByUserName(user.getUserName());
+
+                if(taken != null)
+                    return false;
+            }
+
+            //check if password is the same
+            if(!userFromDb.getPassword().equals(HashPassword.hashPassword(user.getPassword())))
+                user.setPassword(HashPassword.hashPassword(user.getPassword()));
+
+
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.put("http://localhost:9080/api/postservice/updateUser",user, User.class);
 
             userService.updateUser(user);
+            return true;
 
         } catch(Exception e)
         {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -262,8 +291,11 @@ public class UserController {
         String incomingPassword = user.getPassword();
         incomingPassword = HashPassword.hashPassword(incomingPassword);
 
+        System.out.println("INCOMING PASSWORD" + incomingPassword);
+
         // Then we get the current user from the db
         User current = userService.getUserByUserName(user.getUserName());
+        System.out.println("PASSWORD IN DB + " + user.getPassword());
 
         // Return if the hashed passwords match or not
         return current.getPassword().equals(incomingPassword);
