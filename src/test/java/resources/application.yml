@@ -1,0 +1,23 @@
+server:
+  port: 9001
+spring:
+  datasource:
+    url: jdbc:h2:file:./myh2tests/myh2file
+    password: sa
+    username: mypass
+    driver-class-name: org.h2.Driver
+    data: classpath:./userdata.sql
+    initialize: true
+    initialize-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true

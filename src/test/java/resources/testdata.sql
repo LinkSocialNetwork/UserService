@@ -1,0 +1,1 @@
+INSERT INTO link_users(user_id, user_name) VALUES(1,'Christian')
