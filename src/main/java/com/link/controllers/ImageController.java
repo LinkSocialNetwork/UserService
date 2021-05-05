@@ -1,7 +1,7 @@
 package com.link.controllers;
 
 import com.link.model.CustomResponseMessage;
-import com.link.postservice.service.S3Service;
+import com.link.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

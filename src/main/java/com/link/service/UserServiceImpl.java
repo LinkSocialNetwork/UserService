@@ -103,10 +103,15 @@ public class UserServiceImpl implements UserService{
 
     /** Authors: Chris B, Christian K, Dang L, Nick H
      * Deleting user
-     * @param user with current data
+     * @param userId with current data
      */
     @Override
     public void deleteUser(int userId) {
         userDao.deleteById(userId);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return this.userDao.findByEmail(email);
     }
 }
