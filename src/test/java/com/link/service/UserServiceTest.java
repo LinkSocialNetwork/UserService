@@ -82,6 +82,32 @@ public class UserServiceTest {
         userService.createUser(temp);
         Mockito.verify(userDao).save(temp);
     }
+    @Test
+    void updateUser(){
+        User temp = new User();
+        temp.setUserName("dang");
+        temp.setUserID(1);
+        Mockito.when(userDao.save(temp)).thenReturn(temp);
+        Mockito.when(userDao.findByUserName(temp.getUserName())).thenReturn(temp);
+         userService.updateUser(temp);
+         User actualUser = userService.getUserByUserName(temp.getUserName());
+         Mockito.verify(userDao).save(temp);
+         assertEquals(temp, actualUser);
+
+    }
+    @Test
+    void logIn(){
+        User temp = new User();
+        temp.setUserName("dang");
+        temp.setPassword("pass");
+        temp.setUserID(1);
+        Mockito.when(userDao.findByUserName(temp.getUserName())).thenReturn(temp);
+        User actualUser = userService.getUserByUserName(temp.getUserName());
+        Mockito.verify(userDao).findByUserName(temp.getUserName());
+        assertEquals(temp, actualUser);
+
+
+    }
 
 
 
@@ -103,12 +129,19 @@ public class UserServiceTest {
         User expectedUser = new User();
         expectedUser.setUserName("Christian");
         expectedUser.setUserID(1);
-        User actualUser;
-        Mockito.when(userService.getUserByUserName(expectedUser.getUserName())).thenReturn(expectedUser);
-        actualUser = userService.getUserByUserName(expectedUser.getUserName());
+        Mockito.when(userDao.findByUserName(expectedUser.getUserName())).thenReturn(expectedUser);
+        User actualUser = userService.getUserByUserName(expectedUser.getUserName());
+        Mockito.verify(userDao).findByUserName(expectedUser.getUserName());
         assertEquals(expectedUser, actualUser);
 
 
+    }
+    @Test
+    void getNullUserByUserName(){
+            User nullUser = new User();
+           Mockito.when(userService.getUserByUserName(nullUser.getUserName())).thenReturn(nullUser);
+           User actualNullUser = userService.getUserByUserName(nullUser.getUserName());
+           assertEquals(nullUser, actualNullUser);
     }
     @Test
     void getAllUsers() {
