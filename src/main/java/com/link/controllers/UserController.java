@@ -7,6 +7,9 @@ import com.link.service.UserService;
 import com.link.service.UserServiceImpl;
 import com.link.util.HashPassword;
 import com.link.util.JwtEncryption;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.catalina.webresources.JarWarResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,11 +32,17 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/userservice")
+@Getter
+@Setter
 public class UserController {
 
     private JavaMailSender mailSender;
     //    UserController userController;
     private UserService userService;
+
+    //rest template
+    private RestTemplate restTemplate= new RestTemplate();
+
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {
         loggy.setLevel(Level.ALL);
@@ -83,8 +92,8 @@ public class UserController {
 
         //if rest template was unsuccessful in creating a user in db, then return "Could not create user"
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            User postServiceUser = restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser", user, User.class).getBody();
+            User postServiceUser = restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",
+                    user, User.class).getBody();
 
             System.out.println(postServiceUser);
             //make sure ids are the same
@@ -159,9 +168,6 @@ public class UserController {
                     return false;
             }
 
-
-
-            RestTemplate restTemplate = new RestTemplate();
             restTemplate.put("http://localhost:9080/api/postservice/updateUser",user, User.class);
 
             userService.updateUser(user);
@@ -187,7 +193,6 @@ public class UserController {
     public void deleteUser(@PathVariable("userId") int userId){
 
         //When a user is created it will ping the post service to create a user also
-        RestTemplate restTemplate = new RestTemplate();
         restTemplate.postForEntity("http://localhost:9080/api/postservice/deleteUser",userId, Integer.class);
 
         userService.deleteUser(userId);
