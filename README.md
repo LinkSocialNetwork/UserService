@@ -66,16 +66,6 @@ Eureka > Gateway > UserService
 http://localhost:9999/Eureka
 ```
 
-> Run angular project
-```
-cd FrontendClient/Angular
-npm run start
-```
-
-> Visit the frontend url
-```
-http://localhost:4200
-```
 
 ## **License**
 
