@@ -1,0 +1,47 @@
+#USERSERVICE'S CONFIG
+
+server:
+  port: 0
+spring:
+  application:
+    name: userService
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    url: jdbc:h2:file:./UserService/myh2database/myh2file
+    password: sa
+    username: mypass
+    driverClassName: org.h2.Driver
+    data: classpath:./userdata.sql
+    initialize: true
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9999/eureka
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    instance-id:  ${spring.application.name}:${random.value}
+    preferIpAddress: true

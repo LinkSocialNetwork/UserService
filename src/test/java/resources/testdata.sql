@@ -1,0 +1,5 @@
+INSERT INTO user_account(user_id, user_name) VALUES(1,'Christian')
+INSERT INTO user_account(user_id, user_name) VALUES(2,'Dang')
+INSERT INTO user_account(user_id, user_name) VALUES(3,'Hakeem the King')
+INSERT INTO user_account(user_id, user_name) VALUES(4,'Trevin')
+INSERT INTO user_account(user_id, user_name) VALUES(5,'Suliman')
