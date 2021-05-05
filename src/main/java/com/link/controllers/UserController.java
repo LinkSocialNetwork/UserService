@@ -7,7 +7,9 @@ import com.link.service.UserService;
 import com.link.service.UserServiceImpl;
 import com.link.util.HashPassword;
 import com.link.util.JwtEncryption;
+import org.apache.catalina.webresources.JarWarResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Path;
 import java.util.List;
+import java.util.Locale;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.mail.SimpleMailMessage;
@@ -36,10 +40,20 @@ public class UserController {
         //loggy.setLevel(Level.ERROR);
     }
 
+    public UserController() {
+    }
+
+    @Autowired
+    public UserController(UserService userService, JavaMailSender mailSender) {
+        this.userService = userService;
+        this.mailSender = mailSender;
+    }
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
-//----------------------------------------------------------------------------------------------//
+
+
 
     /**
      * Api endpoint that inserts User object into the application depending on whether they exists or not.
@@ -48,46 +62,45 @@ public class UserController {
      */
     @PostMapping(value = "/user")
     public CustomResponseMessage insertNewUser(@RequestBody User user){
-        User alreadyExists = userService.getUserByUserName(user.getUserName());
 
-        if(alreadyExists == null)
-        {
+        User usernameExists = userService.getUserByUserName(user.getUserName().toLowerCase());
+        User emailExists = userService.getUserByEmail(user.getEmail().toLowerCase());
 
-            // This will hash the password and set it to the user before sending it to the db
-            String inputPass = user.getPassword();
-            System.out.println("firstpassword:" + inputPass);
-            inputPass = HashPassword.hashPassword(inputPass);
-            System.out.println("secondpassword:" + inputPass);
-            user.setPassword(inputPass);
+        if(usernameExists != null)
+            return new CustomResponseMessage("Username already exists in system");
 
-           /* RestTemplate restTemplate = new RestTemplate();
-            restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",user, User.class);
-            */
+        if(emailExists != null)
+            return new CustomResponseMessage("email already exists in system");
+
+        user.setUserName(user.getUserName().toLowerCase());
+        user.setEmail(user.getEmail().toLowerCase());
+        // This will hash the password and set it to the user before sending it to the db
+        String inputPass = user.getPassword();
+        System.out.println("firstpassword:" + inputPass);
+        inputPass = HashPassword.hashPassword(inputPass);
+        System.out.println("secondpassword:" + inputPass);
+        user.setPassword(inputPass);
+
+        //if rest template was unsuccessful in creating a user in db, then return "Could not create user"
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            User postServiceUser = restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser", user, User.class).getBody();
+
+            System.out.println(postServiceUser);
+            //make sure ids are the same
+            user.setUserID(postServiceUser.getUserID());
             userService.createUser(user);
 
-            loggy.info("The successful creation of a user with username: "+user.getUserName()+".");
+            loggy.info("The successful creation of a user with username: " + user.getUserName() + ".");
+        }catch(Exception e){
+            e.printStackTrace();
+            return new CustomResponseMessage("Could not create user");
+        }
 
-            //TODO Redirect to login/frontend
-            return new CustomResponseMessage("User was created");
-        }
-        else {
-            loggy.info("The failed creation of a user with username: "+user.getUserName()+".");
-            return new CustomResponseMessage("userName already taken");
-        }
+        return new CustomResponseMessage("User was created");
+
+
     }
-
-    //----------------------------------------------------------------------------------------------//
-
-//    /**
-//     * Api endpoint that receives User object to use username to retreive User object from service layer.
-//     * @param user User object from HTTP request.
-//     * @return User object based on the username.
-//     */
-//    @PostMapping(value = "/getByUsername")
-//    public User getUserByUsername(@RequestBody User user) {
-//        loggy.info("An attempt to retrieve a user with username: "+user.getUserName()+".");
-//        return userService.getUserByUserName(user.getUserName());
-//    }
 
     /**
      * Api endpoint that returns an Array list of User objects from the service layer.
@@ -121,29 +134,43 @@ public class UserController {
      */
     //TODO: might change the session into auth token
     @PutMapping(value = "/user")
-    public void updateUser(@RequestBody User user){
+    public boolean updateUser(@RequestHeader("token") String token, @RequestBody User user){
+        //get user object
+        User userFromDb = userService.getUserByID(user.getUserID());
+
         try{
-            // Get the current user from the given token
-            User current = JwtEncryption.decrypt(user.getAuthToken());
+            JwtEncryption.decrypt(token);
 
-            if(!current.getPassword().equals(user.getPassword())){
-                loggy.info("The successful update(with password) of a user with username: "+user.getUserName()+".");
+            //check if username has been changed
+            if(!userFromDb.getUserName().equalsIgnoreCase(user.getUserName())){
+                //check if new username is already taken
+                User taken = userService.getUserByUserName(user.getUserName().toLowerCase());
 
-                //When a user is created it will ping the post service to create a user also
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.postForEntity("http://localhost:9080/api/postservice/updateUser",user, User.class);
-
-                userService.updateUser(user);
+                if(taken != null)
+                    return false;
             }
-            else {
-                loggy.info("The successful update of a user with username: "+user.getUserName()+".");
-                userService.updateUser(user);
+
+            //check if email has been changed
+            if(!userFromDb.getEmail().equalsIgnoreCase(user.getEmail())){
+                //check if new email is already taken
+                User taken = userService.getUserByEmail(user.getEmail().toLowerCase());
+
+                if(taken != null)
+                    return false;
             }
+
+
+
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.put("http://localhost:9080/api/postservice/updateUser",user, User.class);
+
+            userService.updateUser(user);
+            return true;
 
         } catch(Exception e)
         {
             e.printStackTrace();
-            return;
+            return false;
         }
     }
 
@@ -263,24 +290,92 @@ public class UserController {
     /**
      * Method called when a user is attempting to update their password from their profile
      * Checks if the given password is the current user's password
+     * @author Brandon, Devin, Loutfi, Joe
      *
-     * @param user the current user
+     * @param username username of user in db
+     * @param oldPassword password to verify in db
+     * @param newPassword new password to be set
      * @return true if good, false if not
      */
     @PostMapping(value="/validate-password")
-    public boolean validateOldPassword(@RequestBody User user)
+    public boolean updatePassword(@RequestParam("username") String username, @RequestParam("oldpassword") String oldPassword, @RequestParam("newpassword") String newPassword)
     {
-        return false;
+        // We take the incoming password and check if it's the right one
+        // First we hash it
+        String incomingPassword = HashPassword.hashPassword(oldPassword);
+
+        System.out.println("INCOMING PASSWORD" + incomingPassword);
+
+        // Then we get the current user from the db
+        User current = userService.getUserByUserName(username);
+        System.out.println("PASSWORD IN DB + " + current.getPassword());
+
+        // return false if password does not match
+        if(!current.getPassword().equals(incomingPassword))
+            return false;
+
+        current.setPassword(HashPassword.hashPassword(newPassword));
+        //password needs to be updated
+        this.userService.updateUser(current);
+        return true;
     }
 
+    /**
+     * Api endpoint for the main landing page of application that allows user to login.
+     *
+     * Uses PasswordAuthentication to check if the entered password matches the hashed password in the db
+     *
+     * Generates a new JWT if there's not a valid one already
+     *
+     * @param user User object of the current logged in user.
+     * @return User object
+     */
+    @PostMapping("/login")
 
+    public User login(@RequestBody User user) throws Exception
+    {
 
-    public UserController() {
+        User newUser = userService.getUserByUserName(user.getUserName().toLowerCase());
+
+        if (newUser == null)
+        {
+            loggy.info("Login: can't find username! Received: " + user.getUserName().toLowerCase());
+            return null;
+        }
+
+        String entered = user.getPassword();
+        if(HashPassword.hashPassword(entered).equals(newUser.getPassword())) {
+            newUser.setAuthToken(JwtEncryption.encrypt(newUser));
+            return newUser;
+        }
+        else {
+            loggy.info("Login: can't authenticate password! Received: " + user.getUserName().toLowerCase());
+            return null;
+        }
+
     }
 
-    @Autowired
-    public UserController(UserService userService, JavaMailSender mailSender) {
-        this.userService = userService;
-        this.mailSender = mailSender;
+    /**
+     * Get mapping to check if a user object's token is valid
+     *
+     * @param token the User to check
+     * @return if there's a valid token
+     */
+    @GetMapping(value = "/checkToken")
+    public User checkToken(@RequestHeader("token") String token) throws Exception
+    {
+        if(token == null)
+        {
+            //return jwtService.checkToken(user.getAuthToken());
+            return null;
+        }
+        User user = userService.getUserByID(JwtEncryption.decrypt(token).getUserID());
+        System.out.println("this is user " + user);
+        return user;
+
     }
+
+    //----------------------------------------------------------------------------------------------//
+
+
 }

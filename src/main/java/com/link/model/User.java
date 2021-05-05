@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name= "UserAccount")
+@EqualsAndHashCode
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +48,7 @@ public class User {
     @Column(name= "bio", unique = false, nullable = true)
     private String bio;
 
-    @ColumnDefault(value = "'blahhhhh'")
+//    @ColumnDefault(value = "'blahhhhh'")
     @Column(name= "profile_img_url", unique = false)
     private String profileImg;
 
@@ -64,12 +65,12 @@ public class User {
     private String authToken;
 
     //follows
-    @ManyToMany(fetch = FetchType.LAZY)
+/*    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
-    private List<User> following;
+    private List<User> following;*/
 
     //may need to add a "people who are following me" column as well
-    @ManyToMany(fetch = FetchType.LAZY)
+/*    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name= "user_id", nullable = true)
-    private List<User> myFollowers;
+    private List<User> myFollowers;*/
 }

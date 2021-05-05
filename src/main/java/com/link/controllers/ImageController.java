@@ -1,6 +1,7 @@
 package com.link.controllers;
 
-import com.link.postservice.service.S3Service;
+import com.link.model.CustomResponseMessage;
+import com.link.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,11 +21,13 @@ public class ImageController {
      * @throws IOException
      */
     @PostMapping("/image")
-    public String uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
+    public CustomResponseMessage uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
         String keyName = file.getOriginalFilename();
+        String bucketUrl = "https://linksocialnetworkbucket.s3.us-east-2.amazonaws.com/";
 
         s3Service.uploadFile(keyName, file);
-        return "success";
+
+        return new CustomResponseMessage(bucketUrl+keyName);
     }
 
     @Autowired

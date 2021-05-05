@@ -1,4 +1,4 @@
-package com.link.postservice.service;
+package com.link.service;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
