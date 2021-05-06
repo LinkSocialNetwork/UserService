@@ -4,29 +4,20 @@ package com.link.controllers;
 import com.link.model.CustomResponseMessage;
 import com.link.model.User;
 import com.link.service.UserService;
-import com.link.service.UserServiceImpl;
 import com.link.util.HashPassword;
 import com.link.util.JwtEncryption;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.catalina.webresources.JarWarResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.Path;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -37,7 +28,6 @@ import org.springframework.web.client.RestTemplate;
 public class UserController {
 
     private JavaMailSender mailSender;
-    //    UserController userController;
     private UserService userService;
 
     //rest template
@@ -46,7 +36,6 @@ public class UserController {
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {
         loggy.setLevel(Level.ALL);
-        //loggy.setLevel(Level.ERROR);
     }
 
     public UserController() {
@@ -85,9 +74,7 @@ public class UserController {
         user.setEmail(user.getEmail().toLowerCase());
         // This will hash the password and set it to the user before sending it to the db
         String inputPass = user.getPassword();
-        System.out.println("firstpassword:" + inputPass);
         inputPass = HashPassword.hashPassword(inputPass);
-        System.out.println("secondpassword:" + inputPass);
         user.setPassword(inputPass);
 
         //if rest template was unsuccessful in creating a user in db, then return "Could not create user"
@@ -95,7 +82,6 @@ public class UserController {
             User postServiceUser = restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",
                     user, User.class).getBody();
 
-            System.out.println(postServiceUser);
             //make sure ids are the same
             user.setUserID(postServiceUser.getUserID());
             userService.createUser(user);
@@ -261,7 +247,7 @@ public class UserController {
     //----------------------------------------------------------------------------------------------//
 
     /**
-     * <p>Sends an email to the user with the username rovided</p>
+     * <p>Sends an email to the user with the username provided</p>
      * @param username - The username of the user to send an email to
      * @return A string containing a message as to whether or not the username was found in the database.
      */
@@ -309,11 +295,9 @@ public class UserController {
         // First we hash it
         String incomingPassword = HashPassword.hashPassword(oldPassword);
 
-        System.out.println("INCOMING PASSWORD" + incomingPassword);
 
         // Then we get the current user from the db
         User current = userService.getUserByUserName(username);
-        System.out.println("PASSWORD IN DB + " + current.getPassword());
 
         // return false if password does not match
         if(!current.getPassword().equals(incomingPassword))
@@ -375,7 +359,6 @@ public class UserController {
             return null;
         }
         User user = userService.getUserByID(JwtEncryption.decrypt(token).getUserID());
-        System.out.println("this is user " + user);
         return user;
 
     }

@@ -12,21 +12,6 @@ import java.util.regex.Pattern;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-    // TEST EXAMPLES
-    //
-    //System.out.println(Utilities.generateUniqueId());
-    //
-    //PasswordAuthentication passMan = new PasswordAuthentication();
-    //String password = "whatever";
-    //String hash = passMan.hash(password.toCharArray());
-    //String hash2 = passMan.hash(password.toCharArray());
-    //String hash3 = passMan.hash(password.toCharArray());
-    //
-    //System.out.println(passMan.authenticate(password.toCharArray(), "$31$16$h2sxwsgwnvJGXVB5096Si5aT05bWBIQH4nXEz52c8qw"));
-    //Integer uuid = Utilities.generateUniqueId();
-    //int uuidSize = uuid.toString().length();
-    //System.out.println(uuidSize);
-    //System.out.println(String.format("%0" + (uuidSize + 3) + "d", uuid));
 
 /**
  * Hash passwords for storage, and test passwords against password hashes.
