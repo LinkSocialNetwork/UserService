@@ -1,7 +1,7 @@
 #USERSERVICE'S CONFIG
 
 server:
-  port: 0
+  port: 9015
 spring:
   application:
     name: userService
@@ -39,7 +39,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:9999/eureka
+      defaultZone:
     fetch-registry: true
     register-with-eureka: true
   instance:

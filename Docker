@@ -1,0 +1,4 @@
+FROM openjdk:8
+ADD build/libs/UserService.jar UserService.jar
+EXPOSE 9015
+ENTRYPOINT ["java", "-jar", "UserService.jar"]

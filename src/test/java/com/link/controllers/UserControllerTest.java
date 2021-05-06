@@ -6,7 +6,6 @@ import com.link.model.CustomResponseMessage;
 import com.link.model.User;
 import com.link.service.UserService;
 import com.link.util.JwtEncryption;
-import com.sun.jdi.event.ExceptionEvent;
 import jdk.nashorn.internal.ir.debug.JSONWriter;
 import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONObject;
