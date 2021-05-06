@@ -13,6 +13,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+
+import javax.ws.rs.Path;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -203,6 +206,7 @@ public class UserController {
      */
     //TODO: might change the session into auth token
     @GetMapping(value = "/getLoggedInUser")
+    @Deprecated
     public User getLoggedInUser(HttpSession session){
         //try to get the most updated version of the user
         if(session.getAttribute("loggedInUser")!=null){
@@ -251,6 +255,7 @@ public class UserController {
      * @param username - The username of the user to send an email to
      * @return A string containing a message as to whether or not the username was found in the database.
      */
+    //TODO: may be depricated. need to make tests in we are not depricating
     @PostMapping("/resetPassword")
     public String resetPassword(String username){
 
@@ -351,8 +356,7 @@ public class UserController {
      * @return if there's a valid token
      */
     @GetMapping(value = "/checkToken")
-    public User checkToken(@RequestHeader("token") String token) throws Exception
-    {
+    public User checkToken(@RequestHeader("token") String token) throws UnsupportedEncodingException {
         if(token == null)
         {
             //return jwtService.checkToken(user.getAuthToken());

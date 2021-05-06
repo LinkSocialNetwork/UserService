@@ -34,6 +34,7 @@ class FollowDaoTest {
 
     @AfterEach
     void tearDown() {
+        followDao.deleteAll();
     }
 
     @Test
@@ -44,10 +45,10 @@ class FollowDaoTest {
         User user4 = userDao.findById(4);
         User user5 = userDao.findById(5);
 
-        Follow follow1 = new Follow(1, user1, user2);
-        Follow follow2 = new Follow(2, user1, user3);
-        Follow follow3 = new Follow(3, user1, user4);
-        Follow follow4 = new Follow(4, user1, user5);
+        Follow follow1 = new Follow(9, user1, user2);
+        Follow follow2 = new Follow(10, user1, user3);
+        Follow follow3 = new Follow(11, user1, user4);
+        Follow follow4 = new Follow(12, user1, user5);
 
         followDao.save(follow1);
         followDao.save(follow2);
@@ -100,10 +101,10 @@ class FollowDaoTest {
         User user4 = userDao.findById(4);
         User user5 = userDao.findById(5);
 
-        Follow follow1 = new Follow(1, user1, user2);
-        Follow follow2 = new Follow(2, user1, user3);
-        Follow follow3 = new Follow(3, user1, user4);
-        Follow follow4 = new Follow(4, user1, user5);
+        Follow follow1 = new Follow(5, user1, user2);
+        Follow follow2 = new Follow(6, user1, user3);
+        Follow follow3 = new Follow(7,  user1, user4);
+        Follow follow4 = new Follow(8, user1, user5);
 
         followDao.save(follow1);
         followDao.save(follow2);
