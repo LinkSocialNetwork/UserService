@@ -1,24 +1,29 @@
 package com.link.util;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class PasswordAuthenticationTest {
+    PasswordAuthentication passwordAuthentication;
 
-    @Test
-    void hash() {
+    @BeforeEach
+    void setUp() {
+    }
+
+    @AfterEach
+    void tearDown() {
     }
 
     @Test
-    void authenticate() {
-    }
+    void hash_ReturnEncodedPW_WhenPWProvided(){
 
-    @Test
-    void testHash() {
-    }
-
-    @Test
-    void testAuthenticate() {
     }
 }
