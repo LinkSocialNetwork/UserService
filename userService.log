@@ -14,3 +14,7 @@
 2021-05-05 17:55:05 INFO  UserController:104 - The successful creation of a user with username: tophthegreatest.
 2021-05-05 17:55:05 INFO  UserController:360 - Login: can't authenticate password! Received: tophthegreatest
 2021-05-05 17:55:05 INFO  UserController:200 - The deletion of a user with user id: 1.
+2021-05-05 18:00:06 INFO  UserController:350 - Login: can't find username! Received: tophthegreatest
+2021-05-05 18:00:07 INFO  UserController:104 - The successful creation of a user with username: tophthegreatest.
+2021-05-05 18:00:07 INFO  UserController:360 - Login: can't authenticate password! Received: tophthegreatest
+2021-05-05 18:00:07 INFO  UserController:200 - The deletion of a user with user id: 1.
