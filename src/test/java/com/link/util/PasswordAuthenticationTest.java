@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class PasswordAuthenticationTest {
-    PasswordAuthentication passwordAuthentication;
+
 
     @BeforeEach
     void setUp() {
