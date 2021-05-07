@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 
 import javax.ws.rs.Path;
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -236,7 +237,7 @@ public class UserController {
     @GetMapping(value = "/sendEmail")
     public String sendEmail(User user){
         SimpleMailMessage email = new SimpleMailMessage();
-        String currUserEmail = user.getEmail();
+        String currUserEmail = "saimon.91@hotmail.com";
 
         email.setTo(currUserEmail);
         email.setSubject("Test subject");
@@ -257,10 +258,11 @@ public class UserController {
      */
     //TODO: may be depricated. need to make tests in we are not depricating
     @PostMapping("/resetPassword")
-    public String resetPassword(String username){
+    public CustomResponseMessage resetPassword(@RequestBody String username){
 
+        System.out.println("user Name inside reset password >>> " + username);
         SimpleMailMessage message = new SimpleMailMessage();
-        String emailAddress = "";
+        String emailAddress;
         String success = "Email sent.";
         String failure = "Username not found, try again.";
 
@@ -269,17 +271,24 @@ public class UserController {
         } catch(NullPointerException e){
             e.printStackTrace();
             loggy.error("User attempted password reset, but no user with username: " + username + " was found.");
-            return failure;
+            return new CustomResponseMessage(failure);
         }
+        String newPass=HashPassword.generateTempPassword(10) ;
         message.setTo(emailAddress);
         message.setSubject("Password Reset");
         message.setText("A request was made to reset the password for your Link account " +
                 username + ". If you did not send a request, please disregard this email. Otherwise," +
-                "follow the lik below to be redirected to the reset password page. \n");
+                "follow the lik below to be redirected to the reset password page. \n "+ newPass);
+        User tempUser = userService.getUserByUserName(username);
+        tempUser.setPassword(HashPassword.hashPassword(newPass));
         mailSender.send(message);
+        userService.updateUser(tempUser);
 
-        return success;
+
+        return new CustomResponseMessage(success);
     }
+
+
 
     //----------------------------------------------------------------------------------------------//
 
