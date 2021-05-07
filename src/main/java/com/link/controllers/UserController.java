@@ -248,7 +248,7 @@ public class UserController {
     @GetMapping(value = "/sendEmail")
     public String sendEmail(User user){
         SimpleMailMessage email = new SimpleMailMessage();
-        String currUserEmail = user.getEmail();
+        String currUserEmail = "nicholas.haselden@revature.net";
 
         email.setTo(currUserEmail);
         email.setSubject("Test subject");
