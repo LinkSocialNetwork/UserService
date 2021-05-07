@@ -2,6 +2,7 @@ package com.link.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class HashPassword {
     /**
@@ -37,6 +38,30 @@ public class HashPassword {
             e.printStackTrace();
         }
         return generatedPassword;
+    }
+
+    /**
+     * Password generating method that generates a random sequence of characters for the reset
+     * password.
+     * @param length length of password (int).
+     * @return random string used as reset password.
+     */
+    public static String generateTempPassword(int length){
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+
+        // each iteration of the loop randomly chooses a character from the given
+        // ASCII range and appends it to the `StringBuilder` instance
+
+        for (int i = 0; i < length; i++)
+        {
+            int randomIndex = random.nextInt(chars.length());
+            sb.append(chars.charAt(randomIndex));
+        }
+
+        return sb.toString();
     }
 
 }

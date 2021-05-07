@@ -2,6 +2,8 @@ package com.link.controllers;
 
 import com.link.model.CustomResponseMessage;
 import com.link.service.S3Service;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +12,8 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/userservice")
+@Getter
+@Setter
 public class ImageController {
 
     private S3Service s3Service;
@@ -32,14 +36,6 @@ public class ImageController {
 
     @Autowired
     public ImageController(S3Service s3Service) {
-        this.s3Service = s3Service;
-    }
-
-    public S3Service getS3Service() {
-        return s3Service;
-    }
-
-    public void setS3Service(S3Service s3Service) {
         this.s3Service = s3Service;
     }
 }
