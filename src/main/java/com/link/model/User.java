@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.util.Date;
@@ -55,8 +56,16 @@ public class User {
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
-    @Column(name= "date_created", unique = false)
+    @Column(name= "date_created")
     private Date dateCreated;
+
+    @ColumnDefault("0")
+    @Column(name= "check_password")
+    private int checkPassword;
+
+    @ColumnDefault("1")
+    @Column(name= "check_email")
+    private int checkEmail;
 
     @Column(name = "authToken", unique = true, nullable = true)
     private String authToken;

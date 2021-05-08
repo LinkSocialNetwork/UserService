@@ -261,32 +261,78 @@ public class UserController {
     @PostMapping("/resetPassword")
     public CustomResponseMessage resetPassword(@RequestBody String username){
 
-        System.out.println("user Name inside reset password >>> " + username);
         SimpleMailMessage message = new SimpleMailMessage();
         String emailAddress;
         String success = "Email sent.";
         String failure = "Username not found, try again.";
-
-        try{
-            emailAddress = userService.getUserByUserName(username).getEmail();
-        } catch(NullPointerException e){
-            e.printStackTrace();
+        User user = userService.getUserByUserName(username);
+        if(user == null){
+            System.out.println("no user");
             loggy.error("User attempted password reset, but no user with username: " + username + " was found.");
-            return new CustomResponseMessage(failure);
+            return new CustomResponseMessage("no user with this user name");
+
         }
+        emailAddress = user.getEmail();
+
         String newPass=HashPassword.generateTempPassword(10) ;
         message.setTo(emailAddress);
-        message.setSubject("Password Reset");
-        message.setText("A request was made to reset the password for your Link account " +
-                username + ". If you did not send a request, please disregard this email. Otherwise," +
-                "follow the lik below to be redirected to the reset password page. \n "+ newPass);
+        message.setSubject("Password Reset Request");
+        message.setText("A request was made to reset the password for your Link account (" +
+                username + "). If you did not send a request, please disregard this email. Otherwise," +
+                "this is your new password. \n ("+ newPass+")");
         User tempUser = userService.getUserByUserName(username);
         tempUser.setPassword(HashPassword.hashPassword(newPass));
+        tempUser.setCheckPassword(1);
         mailSender.send(message);
         userService.updateUser(tempUser);
 
 
         return new CustomResponseMessage(success);
+    }
+
+
+
+    //----------------------------------------------------------------------------------------------//
+
+
+
+    /**
+     * <p>Sends an email to the user to verify his email</p>
+     * @param user - its a container with code to send and user name to retrieve user email
+     * @return A CustomResponseMessage containing a message that the email was sent and after that check the code to verify the email.
+     */
+
+    @PostMapping("/verify-email")
+    public CustomResponseMessage verifyEmail(@RequestBody User user){
+
+        User tempUser = userService.getUserByUserName(user.getUserName());
+        SimpleMailMessage message = new SimpleMailMessage();
+        String emailAddress;
+        if(user.getLastName().equals("sendEmail")){
+
+            emailAddress = tempUser.getEmail();
+            message.setTo(emailAddress);
+            message.setSubject("Link Email Verification");
+            message.setText("Hello "+tempUser.getFirstName()+" "+tempUser.getLastName()+"\n" +
+                    "\n" +
+                    "You registered an account on Link, you need to verify that this is your email address using this code: ("+user.getFirstName()+")\n" +
+                    "\n" +
+                    "Kind Regards, Link \n");
+
+            mailSender.send(message);
+            loggy.info("Code sent to verify the email");
+            return new CustomResponseMessage("sent");
+        }else{
+            if(user.getFirstName().equals(user.getLastName())){
+                tempUser.setCheckEmail(0);
+                userService.updateUser(tempUser);
+                loggy.info("User Verified his Email.");
+                return new CustomResponseMessage("email Verified");
+            }else{
+                return new CustomResponseMessage("wrong code");
+            }
+        }
+
     }
 
 
@@ -318,6 +364,7 @@ public class UserController {
         if(!current.getPassword().equals(incomingPassword))
             return false;
 
+        current.setCheckPassword(0);
         current.setPassword(HashPassword.hashPassword(newPassword));
         //password needs to be updated
         this.userService.updateUser(current);
