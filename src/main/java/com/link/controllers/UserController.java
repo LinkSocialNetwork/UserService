@@ -132,7 +132,7 @@ public class UserController {
      * @return Custom response message (string)
      */
     //TODO: might change the session into auth token
-    @PutMapping(value = "/user")
+    @PutMapping(value = "/protected/user")
     public boolean updateUser(@RequestHeader("token") String token, @RequestBody User user){
         //get user object
         User userFromDb = userService.getUserByID(user.getUserID());
@@ -302,7 +302,7 @@ public class UserController {
      * @return A CustomResponseMessage containing a message that the email was sent and after that check the code to verify the email.
      */
 
-    @PostMapping("/verify-email")
+    @PostMapping("/protected/verify-email")
     public CustomResponseMessage verifyEmail(@RequestBody User user){
 
         User tempUser = userService.getUserByUserName(user.getUserName());
@@ -349,7 +349,7 @@ public class UserController {
      * @param newPassword new password to be set
      * @return true if good, false if not
      */
-    @PostMapping(value="/validate-password")
+    @PostMapping(value="/protected/validate-password")
     public boolean updatePassword(@RequestParam("username") String username, @RequestParam("oldpassword") String oldPassword, @RequestParam("newpassword") String newPassword)
     {
         // We take the incoming password and check if it's the right one

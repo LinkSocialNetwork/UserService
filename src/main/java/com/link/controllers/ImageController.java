@@ -24,7 +24,7 @@ public class ImageController {
      * @return String containing the file name that was uploaded.
      * @throws IOException
      */
-    @PostMapping("/image")
+    @PostMapping("/protected/image")
     public CustomResponseMessage uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
         String keyName = file.getOriginalFilename();
         String bucketUrl = "https://linksocialnetworkbucket.s3.us-east-2.amazonaws.com/";
