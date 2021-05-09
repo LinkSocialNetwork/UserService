@@ -13,9 +13,11 @@ spring:
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
             enable: true
+          ssl:
+            trust: smtp.gmail.com
   datasource:
     url: jdbc:h2:file:./UserService/myh2database/myh2file
     password: sa

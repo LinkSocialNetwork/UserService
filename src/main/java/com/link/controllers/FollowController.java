@@ -1,10 +1,8 @@
 package com.link.controllers;
 
-import com.link.dao.FollowDao;
 import com.link.model.Follow;
 import com.link.model.User;
 import com.link.service.FollowService;
-import com.link.service.FollowServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +43,7 @@ public class FollowController {
      * save a new follow
      * @param follow the new pair to be followed
      */
-    @PostMapping("/follow")
+    @PostMapping("/protected/follow")
     public void addFollow (@RequestBody Follow follow) {
         followService.insertFollow(follow);
     }
@@ -55,7 +53,7 @@ public class FollowController {
      * @param followerID the follower's id
      * @param followeeID the followee's id
      */
-    @DeleteMapping("/follow/{followerID}/{followeeID}")
+    @DeleteMapping("/protected/follow/{followerID}/{followeeID}")
     public void deleteFollow (@PathVariable int followerID, @PathVariable int followeeID) {
         followService.deleteFollowByUserID(followerID, followeeID);
     }

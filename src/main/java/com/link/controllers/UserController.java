@@ -4,29 +4,24 @@ package com.link.controllers;
 import com.link.model.CustomResponseMessage;
 import com.link.model.User;
 import com.link.service.UserService;
-import com.link.service.UserServiceImpl;
 import com.link.util.HashPassword;
 import com.link.util.JwtEncryption;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.catalina.webresources.JarWarResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import javax.ws.rs.Path;
+import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -37,7 +32,6 @@ import org.springframework.web.client.RestTemplate;
 public class UserController {
 
     private JavaMailSender mailSender;
-    //    UserController userController;
     private UserService userService;
 
     //rest template
@@ -46,7 +40,6 @@ public class UserController {
     final static Logger loggy = Logger.getLogger(UserController.class);
     static {
         loggy.setLevel(Level.ALL);
-        //loggy.setLevel(Level.ERROR);
     }
 
     public UserController() {
@@ -85,9 +78,7 @@ public class UserController {
         user.setEmail(user.getEmail().toLowerCase());
         // This will hash the password and set it to the user before sending it to the db
         String inputPass = user.getPassword();
-        System.out.println("firstpassword:" + inputPass);
         inputPass = HashPassword.hashPassword(inputPass);
-        System.out.println("secondpassword:" + inputPass);
         user.setPassword(inputPass);
 
         //if rest template was unsuccessful in creating a user in db, then return "Could not create user"
@@ -95,7 +86,6 @@ public class UserController {
             User postServiceUser = restTemplate.postForEntity("http://localhost:9080/api/postservice/duplicateUser",
                     user, User.class).getBody();
 
-            System.out.println(postServiceUser);
             //make sure ids are the same
             user.setUserID(postServiceUser.getUserID());
             userService.createUser(user);
@@ -142,7 +132,7 @@ public class UserController {
      * @return Custom response message (string)
      */
     //TODO: might change the session into auth token
-    @PutMapping(value = "/user")
+    @PutMapping(value = "/protected/user")
     public boolean updateUser(@RequestHeader("token") String token, @RequestBody User user){
         //get user object
         User userFromDb = userService.getUserByID(user.getUserID());
@@ -217,6 +207,7 @@ public class UserController {
      */
     //TODO: might change the session into auth token
     @GetMapping(value = "/getLoggedInUser")
+    @Deprecated
     public User getLoggedInUser(HttpSession session){
         //try to get the most updated version of the user
         if(session.getAttribute("loggedInUser")!=null){
@@ -246,7 +237,8 @@ public class UserController {
     @GetMapping(value = "/sendEmail")
     public String sendEmail(User user){
         SimpleMailMessage email = new SimpleMailMessage();
-        String currUserEmail = user.getEmail();
+
+        String currUserEmail = "saimon.91@hotmail.com";
 
         email.setTo(currUserEmail);
         email.setSubject("Test subject");
@@ -261,34 +253,89 @@ public class UserController {
     //----------------------------------------------------------------------------------------------//
 
     /**
-     * <p>Sends an email to the user with the username rovided</p>
+     * <p>Sends an email to the user with the username provided</p>
      * @param username - The username of the user to send an email to
      * @return A string containing a message as to whether or not the username was found in the database.
      */
+    //TODO: may be depricated. need to make tests in we are not depricating
     @PostMapping("/resetPassword")
-    public String resetPassword(String username){
+    public CustomResponseMessage resetPassword(@RequestBody String username){
 
         SimpleMailMessage message = new SimpleMailMessage();
-        String emailAddress = "";
+        String emailAddress;
         String success = "Email sent.";
         String failure = "Username not found, try again.";
-
-        try{
-            emailAddress = userService.getUserByUserName(username).getEmail();
-        } catch(NullPointerException e){
-            e.printStackTrace();
+        User user = userService.getUserByUserName(username);
+        if(user == null){
+            System.out.println("no user");
             loggy.error("User attempted password reset, but no user with username: " + username + " was found.");
-            return failure;
-        }
-        message.setTo(emailAddress);
-        message.setSubject("Password Reset");
-        message.setText("A request was made to reset the password for your Link account " +
-                username + ". If you did not send a request, please disregard this email. Otherwise," +
-                "follow the lik below to be redirected to the reset password page. \n");
-        mailSender.send(message);
+            return new CustomResponseMessage("no user with this user name");
 
-        return success;
+        }
+        emailAddress = user.getEmail();
+
+        String newPass=HashPassword.generateTempPassword(10) ;
+        message.setTo(emailAddress);
+        message.setSubject("Password Reset Request");
+        message.setText("A request was made to reset the password for your Link account (" +
+                username + "). If you did not send a request, please disregard this email. Otherwise," +
+                "this is your new password. \n ("+ newPass+")");
+        User tempUser = userService.getUserByUserName(username);
+        tempUser.setPassword(HashPassword.hashPassword(newPass));
+        tempUser.setCheckPassword(1);
+        mailSender.send(message);
+        userService.updateUser(tempUser);
+
+
+        return new CustomResponseMessage(success);
     }
+
+
+
+    //----------------------------------------------------------------------------------------------//
+
+
+
+    /**
+     * <p>Sends an email to the user to verify his email</p>
+     * @param user - its a container with code to send and user name to retrieve user email
+     * @return A CustomResponseMessage containing a message that the email was sent and after that check the code to verify the email.
+     */
+
+    @PostMapping("/protected/verify-email")
+    public CustomResponseMessage verifyEmail(@RequestBody User user){
+
+        User tempUser = userService.getUserByUserName(user.getUserName());
+        SimpleMailMessage message = new SimpleMailMessage();
+        String emailAddress;
+        if(user.getLastName().equals("sendEmail")){
+
+            emailAddress = tempUser.getEmail();
+            message.setTo(emailAddress);
+            message.setSubject("Link Email Verification");
+            message.setText("Hello "+tempUser.getFirstName()+" "+tempUser.getLastName()+"\n" +
+                    "\n" +
+                    "You registered an account on Link, you need to verify that this is your email address using this code: ("+user.getFirstName()+")\n" +
+                    "\n" +
+                    "Kind Regards, Link \n");
+
+            mailSender.send(message);
+            loggy.info("Code sent to verify the email");
+            return new CustomResponseMessage("sent");
+        }else{
+            if(user.getFirstName().equals(user.getLastName())){
+                tempUser.setCheckEmail(0);
+                userService.updateUser(tempUser);
+                loggy.info("User Verified his Email.");
+                return new CustomResponseMessage("email Verified");
+            }else{
+                return new CustomResponseMessage("wrong code");
+            }
+        }
+
+    }
+
+
 
     //----------------------------------------------------------------------------------------------//
 
@@ -302,23 +349,22 @@ public class UserController {
      * @param newPassword new password to be set
      * @return true if good, false if not
      */
-    @PostMapping(value="/validate-password")
+    @PostMapping(value="/protected/validate-password")
     public boolean updatePassword(@RequestParam("username") String username, @RequestParam("oldpassword") String oldPassword, @RequestParam("newpassword") String newPassword)
     {
         // We take the incoming password and check if it's the right one
         // First we hash it
         String incomingPassword = HashPassword.hashPassword(oldPassword);
 
-        System.out.println("INCOMING PASSWORD" + incomingPassword);
 
         // Then we get the current user from the db
         User current = userService.getUserByUserName(username);
-        System.out.println("PASSWORD IN DB + " + current.getPassword());
 
         // return false if password does not match
         if(!current.getPassword().equals(incomingPassword))
             return false;
 
+        current.setCheckPassword(0);
         current.setPassword(HashPassword.hashPassword(newPassword));
         //password needs to be updated
         this.userService.updateUser(current);
@@ -367,15 +413,13 @@ public class UserController {
      * @return if there's a valid token
      */
     @GetMapping(value = "/checkToken")
-    public User checkToken(@RequestHeader("token") String token) throws Exception
-    {
+    public User checkToken(@RequestHeader("token") String token) throws UnsupportedEncodingException {
         if(token == null)
         {
             //return jwtService.checkToken(user.getAuthToken());
             return null;
         }
         User user = userService.getUserByID(JwtEncryption.decrypt(token).getUserID());
-        System.out.println("this is user " + user);
         return user;
 
     }

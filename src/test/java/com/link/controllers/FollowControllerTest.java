@@ -37,8 +37,8 @@ class FollowControllerTest {
 
     @Test
     void getAllFollowers() {
-        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken");
-        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchi2lds2020@email.com","so2e bio","/profi2le","abusin2essname",new Date(), "authToken");
+        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken");
+        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchi2lds2020@email.com","so2e bio","/profi2le","abusin2essname",new Date(),0,1, "authToken");
         List<User> userList = new ArrayList<>();
         userList.add(user1);
 
@@ -54,8 +54,8 @@ class FollowControllerTest {
 
     @Test
     void getAllFollowees() {
-        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken");
-        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchi2lds2020@email.com","so2e bio","/profi2le","abusin2essname",new Date(), "authToken");
+        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken");
+        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchi2lds2020@email.com","so2e bio","/profi2le","abusin2essname",new Date(),0,1, "authToken");
         List<User> userList = new ArrayList<>();
         userList.add(user2);
 
@@ -79,7 +79,7 @@ class FollowControllerTest {
     void deleteFollow() {
         int userId1 = 1;
         int userId2 = 2;
-        Follow follow = new Follow();
+        //Follow follow = new Follow();
         followController.deleteFollow(userId1,userId2);
         Mockito.verify(followService).deleteFollowByUserID(userId1,userId2);
     }
