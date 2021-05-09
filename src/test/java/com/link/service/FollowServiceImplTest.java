@@ -37,8 +37,8 @@ class FollowServiceImplTest {
 
     @Test
     void insertFollow() {
-        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken");
-        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchilds20202@email.com","some bio2","/profile2","abusines2sname",new Date(), "authToken");
+        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken");
+        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchilds20202@email.com","some bio2","/profile2","abusines2sname",new Date(),0,1, "authToken");
 
         Follow follow = new Follow(1, user1, user2);
 
@@ -52,10 +52,10 @@ class FollowServiceImplTest {
 
     @Test
     void deleteAllByFollowerUserIDAndFolloweeUserID() {
-        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken");
-        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchilds20202@email.com","some bio2","/profile2","abusines2sname",new Date(), "authToken");
+        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken");
+        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchilds20202@email.com","some bio2","/profile2","abusines2sname",new Date(),0,1, "authToken");
 
-        Follow follow = new Follow(1, user1, user2);
+        //Follow follow = new Follow(1, user1, user2);
 
         followService.deleteFollowByUserID(user1.getUserID(),user2.getUserID());
 
@@ -96,9 +96,9 @@ class FollowServiceImplTest {
 
     @Test
     void getAllFollowees_ReturnsListOfFollowers_When2FollowersAreAdded() {
-        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken");
-        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchi2lds2020@email.com","so2e bio","/profi2le","abusin2essname",new Date(), "authToken");
-        User user3 = new User(3,"yaboikev23","Kevi3n2","Chi3ds2","fluff3bunny2",new Date(),"kc3hi2lds2020@email.com","so2e b3io","/profi2le","abusin2essname",new Date(), "authToken");
+        User user1 = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken");
+        User user2 = new User(2,"yaboikev2","Kevin2","Childs2","fluffybunny2",new Date(),"kchi2lds2020@email.com","so2e bio","/profi2le","abusin2essname",new Date(),0,1, "authToken");
+        User user3 = new User(3,"yaboikev23","Kevi3n2","Chi3ds2","fluff3bunny2",new Date(),"kc3hi2lds2020@email.com","so2e b3io","/profi2le","abusin2essname",new Date(),0,1, "authToken");
 
         List<User> userList = new ArrayList<>();
         userList.add(user2);

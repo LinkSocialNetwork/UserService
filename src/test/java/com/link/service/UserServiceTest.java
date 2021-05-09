@@ -113,14 +113,14 @@ public class UserServiceTest {
 
     @Test
     void deleteUser(){
-        List<User> following = new ArrayList<>();
-        List<User> myFollowing= new ArrayList<>();
-        User aUser = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken");
-        User aNullPost = null;
+        /*List<User> following = new ArrayList<>();
+        List<User> myFollowing= new ArrayList<>();*/
+        User aUser = new User(1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken");
+        //User aNullPost = null;
         userService.deleteUser(aUser.getUserID());
         Mockito.verify(userDao).deleteById(aUser.getUserID());
         aUser = userService.getUserByID(aUser.getUserID());
-        assertEquals(aNullPost, aUser);
+        assertNull(aUser);
 
 
     }
@@ -145,12 +145,12 @@ public class UserServiceTest {
     }
     @Test
     void getAllUsers() {
-        List<User> following = new ArrayList<>();
-        List<User> myFollowing= new ArrayList<>();
+        /*List<User> following = new ArrayList<>();
+        List<User> myFollowing= new ArrayList<>();*/
         List<User> givenList = new ArrayList<>();
-        givenList.add(new User (1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken"));
-        givenList.add(new User (2,"yaboicorey","Corey","Schink","fluffybunny",new Date(),"cschink2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken"));
-        givenList.add(new User (3,"yaboichristian","Christian","Kent","fluffybunny",new Date(),"ckent2020@email.com","some bio","/profile","abusinessname",new Date(), "authToken"));
+        givenList.add(new User (1,"yaboikev","Kevin","Childs","fluffybunny",new Date(),"kchilds2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken"));
+        givenList.add(new User (2,"yaboicorey","Corey","Schink","fluffybunny",new Date(),"cschink2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken"));
+        givenList.add(new User (3,"yaboichristian","Christian","Kent","fluffybunny",new Date(),"ckent2020@email.com","some bio","/profile","abusinessname",new Date(),0,1, "authToken"));
         Mockito.when(userDao.findAll()).thenReturn(givenList);
         List<User> actualReturn = userService.getAllUsers();
         Mockito.verify(userDao).findAll();
